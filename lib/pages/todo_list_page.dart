@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:todo_app/models/todo_model.dart';
@@ -15,7 +17,14 @@ class _TodoListPageState extends State<TodoListPage> {
   @override
   void initState(){
     super.initState();
+
   }
+  @override
+  void dispose(){
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final todos = widget.todos;

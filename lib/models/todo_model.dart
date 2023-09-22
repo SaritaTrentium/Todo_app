@@ -10,7 +10,7 @@ class Todo extends HiveObject{
   final String desc;
 
   @HiveField(2)
-  final DateTime? deadline;
+  DateTime? deadline;
   
   @HiveField(3)
    bool? isCompleted;
