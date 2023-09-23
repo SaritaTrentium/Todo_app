@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/pages/todo_list_page.dart';
+import 'package:todo_app/pages/login_page.dart';
 import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
       ),
-      home: TodoListPage(todos: todos),
+      home: const LoginPage(),
     );
   }
 }

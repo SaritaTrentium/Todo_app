@@ -95,12 +95,12 @@ class _TodoPageState extends State<TodoPage> {
     );
 
     if (selectedDate != null) {
+      // ignore: use_build_context_synchronously
       final selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(selectedDateTime),
         confirmText: 'Confirm',
       );
-
       if (selectedTime != null) {
         setState(() {
           selectedDateTime = DateTime(
@@ -114,8 +114,6 @@ class _TodoPageState extends State<TodoPage> {
       }
     }
   }
-
-
   void addTodo() {
     final todoBox = Hive.box<Todo>('todos');
     final title = titleController.text.trim();
@@ -129,15 +127,6 @@ class _TodoPageState extends State<TodoPage> {
     DateTime oneDayAgo = selectedDateTime.subtract(const Duration(days: 1));
     DateTime oneHourAgo = selectedDateTime.subtract(const Duration(hours: 1));
     DateTime tenMinuteAgo = selectedDateTime.subtract(const Duration(minutes: 10));
-
-
-  //   Duration tenMinDifference = tenMinuteAgo.difference(selectedDateTime);
-  //   //print(tenMinDifference.inMinutes);
-  //   Duration oneHourDifference = oneHourAgo.difference(selectedDateTime);
-  //   //print(oneHourDifference.inHours);
-  //   Duration oneDayDifference = oneDayAgo.difference(selectedDateTime);
-  //   //print(oneDayDifference.inDays);
-
 
       notificationService.scheduleNotification(
         id: 0,
@@ -162,7 +151,6 @@ class _TodoPageState extends State<TodoPage> {
       payload: 'Time Left 10 minutes',
       scheduleNotificationTime: oneDayAgo,
     );
-
 
     final newTodo = Todo(
       title: title,
