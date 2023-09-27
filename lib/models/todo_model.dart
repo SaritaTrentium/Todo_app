@@ -13,7 +13,10 @@ class Todo extends HiveObject{
   DateTime? deadline;
   
   @HiveField(3)
-   bool? isCompleted;
+  bool? isCompleted;
 
-  Todo({required this.title, required this.desc,required this.deadline , this.isCompleted= false});
+  @HiveField(4)
+  final String userId;
+
+  Todo({required this.title, required this.desc,required this.deadline , this.isCompleted= false, required this.userId});
 }

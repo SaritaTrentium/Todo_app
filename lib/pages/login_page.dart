@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/pages/signup_page.dart';
+import 'package:todo_app/pages/todo_list_page.dart';
+import '../models/todo_model.dart';
+import '../providers/auth_provider.dart';
+import '../services/auth_service.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -7,45 +14,33 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-  TextEditingController nameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController pwdController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final todoBox = Hive.box<Todo>('todos');
+    final todos = todoBox.values.toList();
+    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: Form(
+        key: _formKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              child: Image(image: AssetImage('assets/images/user.jpg')
-              ),
-              maxRadius: 60,
+            Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Text("Welcome To Login",
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
             ),
             Padding(
-              padding: const EdgeInsets.only(top:32 ,left: 32, right: 32),
-              child: TextFormField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Enter Your Name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-               validator: (value) {
-                 if(value!.isEmpty){
-                   return "User can not be empty.";
-                 }
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top:16 ,left: 32, right: 32),
+              padding: const EdgeInsets.only(top:16,left: 32, right: 32),
               child: TextFormField(
                 controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'Enter Your Name',
+                  labelText: 'Enter Your Email',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -53,8 +48,6 @@ class _LoginPageState extends State<LoginPage> {
                 validator: (value){
                   if(value!.isEmpty){
                     return "Email can not be empty.";
-                  } else if(value.contains('@')) {
-                    return "Email should contains @.";
                   }
                 },
               ),
@@ -63,8 +56,9 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(top:16 ,left: 32, right: 32),
               child: TextFormField(
                 controller: pwdController,
+                obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Enter Your Name',
+                  labelText: 'Enter Your Password',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -79,14 +73,27 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(
-              height: 30,
+              height: 40,
             ),
-            ElevatedButton(onPressed: () { }, child: const Text('Login')),
+            ElevatedButton(onPressed: () async {
+              if(_formKey.currentState!.validate()){
+                  final email = emailController.text.trim();
+                  final password = pwdController.text.trim();
+                  authProvider.signInUser(email, password, context);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TodoListPage(todos: todos)));
+              }
+            //
+            }, child: const Text('Login')),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Create An New Account'),
-                TextButton(onPressed: () {} , child: const Text('SignUp')),
+                const Text("Don't have an account?"),
+                TextButton(onPressed: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>SignUpPage()));
+                } , child: const Text('SignUp')),
               ],
             ),
           ],

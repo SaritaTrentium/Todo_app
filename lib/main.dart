@@ -1,12 +1,24 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/pages/login_page.dart';
+import 'package:todo_app/pages/signup_page.dart';
+import 'package:todo_app/pages/splash_page.dart';
+import 'package:todo_app/providers/auth_provider.dart';
+import 'package:todo_app/providers/theme_changer_provider.dart';
+import 'package:todo_app/providers/todo_list_provider.dart';
+import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:firebase_core/firebase_core.dart';
+
+import 'providers/user_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   NotificationService().initialize();
   tz.initializeTimeZones();
@@ -15,7 +27,16 @@ Future<void> main() async {
   Hive.registerAdapter(TodoAdapter());
   await Hive.openBox<Todo>('todos');
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeChangerProvider()),
+        ChangeNotifierProvider(create: (context) => UserModelProvider()),
+        ChangeNotifierProvider(create: (context) => TodoListProvider()),
+        ChangeNotifierProvider(create: (context) => TodoPageProvider()),
+      ],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -23,20 +44,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeChangerProvider>(context);
     final todoBox = Hive.box<Todo>('todos');
     final todos = todoBox.values.toList();
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        appBarTheme: const  AppBarTheme(
-          backgroundColor: Colors.purple,
-          foregroundColor: Colors.white,
-        ),
+      themeMode: themeProvider.themeMode,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      home: FutureBuilder<User?>(
+        future: FirebaseAuth.instance.authStateChanges().first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While waiting for the authentication state, show a loading indicator or splash screen.
+            return SplashPage();
+          } else {
+            // Check if the user is authenticated
+            final bool isUserAuthenticated = snapshot.hasData;
+
+            // Return the appropriate page based on the authentication status
+            return isUserAuthenticated ? LoginPage() : SignUpPage();
+          }
+        },
       ),
-      home: const LoginPage(),
+      routes: {
+        'LoginPage': (context) => LoginPage(),
+        'SignUpPage': (context) => SignUpPage(),
+      },
     );
   }
 }

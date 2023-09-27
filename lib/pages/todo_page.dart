@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
+import '../widget/change_theme_widget.dart';
+import 'package:todo_app/theme/my_theme.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -14,31 +18,28 @@ class TodoPage extends StatefulWidget {
 
 class _TodoPageState extends State<TodoPage> {
   NotificationService notificationService = NotificationService();
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descController = TextEditingController();
   DateTime selectedDateTime = DateTime.now();
 
     @override
-    void initState() {
-    super.initState();
-  }
-
-    @override
     Widget build(BuildContext context) {
-    final todoBox = Hive.box<Todo>('todos');
-    final todos = todoBox.values.toList();
+      final todoProvider = Provider.of<TodoPageProvider>(context);
+      final todoBox = Hive.box<Todo>('todos');
+      final todos = todoBox.values.toList();
 
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Add Todo"),
+          title: Text("Add Todo"),
           centerTitle: true,
+          actions: [
+            ChangeThemeButtonWidget(),
+          ],
         ),
         body: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
-                controller: titleController,
+                onChanged: (value) => todoProvider.updateTitle(value),
                 decoration: const InputDecoration(
                   labelText: 'Enter Title',
                   border: OutlineInputBorder(
@@ -50,7 +51,7 @@ class _TodoPageState extends State<TodoPage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextFormField(
-                controller: descController,
+                onChanged: (value) => todoProvider.updateDesc(value),
                 decoration: const InputDecoration(
                   labelText: 'Enter Description',
                   border: OutlineInputBorder(
@@ -80,12 +81,13 @@ class _TodoPageState extends State<TodoPage> {
             ),
            ElevatedButton(
              onPressed: addTodo,
-             child: const Text("Add"),),
+
+             child: const Text("Add"),
+           ),
           ],
         ),
       );
     }
-
   Future<void> _selectDateAndTime(BuildContext context) async {
     final selectedDate = await showDatePicker(
       context: context,
@@ -115,9 +117,10 @@ class _TodoPageState extends State<TodoPage> {
     }
   }
   void addTodo() {
+    final todoProvider = Provider.of<TodoPageProvider>(context, listen: false);
     final todoBox = Hive.box<Todo>('todos');
-    final title = titleController.text.trim();
-    final desc = descController.text.trim();
+    final title = todoProvider.title.trim();
+    final desc = todoProvider.desc.trim();
 
     if(title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Title")));
@@ -152,19 +155,27 @@ class _TodoPageState extends State<TodoPage> {
       scheduleNotificationTime: oneDayAgo,
     );
 
+    // final newTodo = TodoApp(
+    //   id: UniqueKey().toString(), // Generate a unique ID for the todo
+    //   groupId: 'common_group_id', // Use a common group ID
+    //   userId: authProvider.userId, // Get the current user's UID
+    //   title: 'New Todo',
+    //   description: 'Description of the new todo',
+    //   isCompletedTodo: false,
+    // );
+
     final newTodo = Todo(
       title: title,
       desc: desc,
-      deadline: selectedDateTime,
-
+      deadline: todoProvider.selectedDateTime,
+      userId: 'id',
     );
       setState(() {
         todoBox.add(newTodo);
       });
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Added Successfully"),),);
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage(todos: todoBox.values.toList())), (route) => false);
-    titleController.clear();
-    descController.clear();
+    final todos = todoBox.values.toList();
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage(todos: todos)), (route) => false);
 
   }
 }
