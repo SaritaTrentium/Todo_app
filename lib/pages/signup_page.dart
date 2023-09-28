@@ -70,13 +70,13 @@ class _SignUpPageState extends State<SignUpPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                      validator: (value) {
-                          if (value == null  || value.isEmpty) {
-                              return 'Please Enter Email ID';
-                          } else {
-                              return null;
-                            }
-                      },
+                  validator: (value) {
+                    if (value == null  || value.isEmpty) {
+                      return 'Please Enter Email ID';
+                    } else {
+                      return null;
+                    }
+                  },
                 ),
               ),
               Padding(
@@ -117,7 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   print(name + email + password);
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => TodoListPage(todos: todos), //
+                      builder: (context) => TodoListPage(todos: todos),
                     ),
                   );
                 }
@@ -134,8 +134,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         final buttonColor = Theme.of(context).primaryColor;
                         setState(() {
                         });
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                  } , child: const Text('Login')),
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                      } , child: const Text('Login')),
                 ],
               ),
             ],

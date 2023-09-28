@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
 import '../widget/change_theme_widget.dart';
-import 'package:todo_app/theme/my_theme.dart';
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -25,7 +24,6 @@ class _TodoPageState extends State<TodoPage> {
       final todoProvider = Provider.of<TodoPageProvider>(context);
       final todoBox = Hive.box<Todo>('todos');
       final todos = todoBox.values.toList();
-
       return Scaffold(
         appBar: AppBar(
           title: Text("Add Todo"),

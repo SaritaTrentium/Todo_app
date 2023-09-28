@@ -10,7 +10,7 @@ class TodoListProvider extends ChangeNotifier {
   List<Todo> get todos => _todoBox.values.toList();
 
   TodoListProvider() {
-  _initHive();
+    _initHive();
   }
   // _todoBox is initialized in the _initHive method, which is called when the
   // TodoListProvider is created. It opens a Hive box of type Todo and assigns it to _todoBox.
@@ -20,17 +20,17 @@ class TodoListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
- // AddTodo method to add data
+  // AddTodo method to add data
   void addTodo(Todo todo){
-      _todoBox.add(todo);
-      notifyListeners();
+    _todoBox.add(todo);
+    notifyListeners();
   }
 
   // Your DeleteTodo method to delete data at a specific index
   void DeleteTodo(int index) {
-      if (index >= 0 && index < _todoBox.length) {
+    if (index >= 0 && index < _todoBox.length) {
       _todoBox.deleteAt(index);
       notifyListeners();
-      }
     }
   }
+}

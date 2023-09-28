@@ -9,7 +9,7 @@ import 'package:todo_app/widget/change_theme_widget.dart';
 
 import '../providers/auth_provider.dart';
 class TodoListPage extends StatefulWidget {
-final List<Todo> todos;
+  final List<Todo> todos;
   const TodoListPage({super.key, required this.todos});
 
   @override

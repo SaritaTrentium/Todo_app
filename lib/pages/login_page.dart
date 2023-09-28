@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/pages/signup_page.dart';
-import 'package:todo_app/pages/todo_list_page.dart';
 import '../models/todo_model.dart';
 import '../providers/auth_provider.dart';
-import '../services/auth_service.dart';
+import 'package:todo_app/providers/todo_list_provider.dart';
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -20,9 +19,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
     final todoBox = Hive.box<Todo>('todos');
     final todos = todoBox.values.toList();
-    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -80,9 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                   final email = emailController.text.trim();
                   final password = pwdController.text.trim();
                   authProvider.signInUser(email, password, context);
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TodoListPage(todos: todos)));
               }
-            //
             }, child: const Text('Login')),
             const SizedBox(
               height: 10,

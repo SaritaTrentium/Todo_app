@@ -4,16 +4,16 @@ import 'package:todo_app/services/auth_service.dart';
 class AuthProvider with ChangeNotifier{
 
   bool _isLoggedIn = false;
-  bool get isLoggedIn => _isLoggedIn;
+  bool get isLoggedIn =>  _userId != null;
 
-  String? _username;
-  String? get username => _username;
-
+  String? _userId;
+  String? get userId => _userId;
 
   Future<void> signUpUser(String name, String email, String password, BuildContext context) async {
     try {
-      await AuthServices.signUpUser(name, email, password, context);
-        _username = name;
+     String getUserId =  await AuthServices.signUpUser(name, email, password, context);
+     print('Get userID AuthProvider : $getUserId');
+      _userId = getUserId;
         _isLoggedIn = true;
         notifyListeners();
     } catch (e) {

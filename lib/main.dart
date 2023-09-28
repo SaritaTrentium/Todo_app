@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
+import 'package:todo_app/models/user_model.dart';
 import 'package:todo_app/pages/login_page.dart';
 import 'package:todo_app/pages/signup_page.dart';
-import 'package:todo_app/pages/splash_page.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
@@ -13,7 +13,6 @@ import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:firebase_core/firebase_core.dart';
-
 import 'providers/user_provider.dart';
 
 Future<void> main() async {
@@ -23,9 +22,11 @@ Future<void> main() async {
   NotificationService().initialize();
   tz.initializeTimeZones();
 
-  await Hive.initFlutter();
-  Hive.registerAdapter(TodoAdapter());
-  await Hive.openBox<Todo>('todos');
+    await Hive.initFlutter();
+    Hive.registerAdapter(TodoAdapter());
+    Hive.registerAdapter(UsersAdapter());
+    await Hive.openBox<Users>('users');
+    await Hive.openBox<Todo>('todos');
 
   runApp(
     MultiProvider(
@@ -46,32 +47,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeChangerProvider>(context);
     final todoBox = Hive.box<Todo>('todos');
-    final todos = todoBox.values.toList();
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       themeMode: themeProvider.themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: FutureBuilder<User?>(
-        future: FirebaseAuth.instance.authStateChanges().first,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // While waiting for the authentication state, show a loading indicator or splash screen.
-            return SplashPage();
-          } else {
-            // Check if the user is authenticated
-            final bool isUserAuthenticated = snapshot.hasData;
-
-            // Return the appropriate page based on the authentication status
-            return isUserAuthenticated ? LoginPage() : SignUpPage();
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot){
+          if(snapshot.hasData) {
+            return LoginPage();
+          }else {
+            return SignUpPage();
           }
-        },
+        }
       ),
-      routes: {
-        'LoginPage': (context) => LoginPage(),
-        'SignUpPage': (context) => SignUpPage(),
-      },
     );
   }
 }
