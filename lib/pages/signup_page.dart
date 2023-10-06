@@ -5,17 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/pages/login_page.dart';
 import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:todo_app/providers/auth_provider.dart';
-import 'package:todo_app/providers/user_provider.dart';
-
+import 'package:todo_app/services/auth_isUserLoggedIn.dart';
 import '../models/todo_model.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  State<SignUpPage> createState() => SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController nameController = TextEditingController();
@@ -23,14 +22,16 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController pwdController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final userModelProvider = Provider.of<UserModelProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context);
-    if(authProvider.isLoggedIn){
+    if (authProvider.isLoggedIn) {
       return LoginPage();
     }
-    final todoBox = Hive.box<Todo>('todos');
-    final todos = todoBox.values.toList();
     return Scaffold(
       body: Container(
         child: Form(
@@ -38,9 +39,10 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('SignUp',style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+              const Text('SignUp',
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
               Padding(
-                padding: const EdgeInsets.only(top:32 ,left: 32, right: 32),
+                padding: const EdgeInsets.only(top: 32, left: 32, right: 32),
                 child: TextFormField(
                   key: ValueKey('fullname'),
                   controller: nameController,
@@ -51,7 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null  || value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Please Enter Full Name';
                     }
                     return null;
@@ -59,7 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top:16 ,left: 32, right: 32),
+                padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
                 child: TextFormField(
                   controller: emailController,
                   key: ValueKey('email'),
@@ -71,7 +73,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null  || value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Please Enter Email ID';
                     } else {
                       return null;
@@ -80,7 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top:16 ,left: 32, right: 32),
+                padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
                 child: TextFormField(
                   controller: pwdController,
                   key: ValueKey('password'),
@@ -108,18 +110,23 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(
                 height: 40,
               ),
-              ElevatedButton(onPressed: () {
+              ElevatedButton(onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   String name = nameController.text.trim();
                   String email = emailController.text.trim();
                   String password = pwdController.text.trim();
-                  authProvider.signUpUser(name, email, password, context);
                   print(name + email + password);
+                  authProvider.signUpUser(name, email, password, context);
+                  saveLoginState(true);
+                  final user = FirebaseAuth.instance.currentUser;
+                  final todoBox = await Hive.openBox<Todo>('todos_${user!.email}');
+                  await todoBox.clear();
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => TodoListPage(todos: todos),
+                      builder: (context) => TodoListPage(),
                     ),
                   );
+
                 }
               }, child: const Text('Create an account')),
               const SizedBox(
@@ -130,12 +137,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: [
                   const Text('Already have an account?'),
                   TextButton(
-                      onPressed: () {
-                        final buttonColor = Theme.of(context).primaryColor;
+                      onPressed: () async{
                         setState(() {
-                        });
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                      } , child: const Text('Login')),
+                            Navigator.pushReplacement(context, MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                          });
+                        }, child: const Text('Login')),
                 ],
               ),
             ],

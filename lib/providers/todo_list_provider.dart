@@ -1,36 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:todo_app/services/todo_service.dart';
 import '../models/todo_model.dart';
 
 class TodoListProvider extends ChangeNotifier {
-  final String _todoBoxName = 'todos'; // Name of the Hive box
+  final TodoService _todoService = TodoService();
+  final String _todoBoxName = 'todos';
 
-  late Box<Todo> _todoBox;
+  List<Todo> _todos = [];
+  List<Todo> get todos => _todos;
 
-  List<Todo> get todos => _todoBox.values.toList();
-
-  TodoListProvider() {
-    _initHive();
-  }
-  // _todoBox is initialized in the _initHive method, which is called when the
-  // TodoListProvider is created. It opens a Hive box of type Todo and assigns it to _todoBox.
-  Future<void> _initHive() async {
-    await Hive.openBox<Todo>(_todoBoxName);
-    _todoBox = Hive.box<Todo>(_todoBoxName);
-    notifyListeners();
-  }
-
-  // AddTodo method to add data
-  void addTodo(Todo todo){
-    _todoBox.add(todo);
-    notifyListeners();
-  }
-
-  // Your DeleteTodo method to delete data at a specific index
-  void DeleteTodo(int index) {
-    if (index >= 0 && index < _todoBox.length) {
-      _todoBox.deleteAt(index);
-      notifyListeners();
+  Future<List<Todo>> fetchUserTodos(String? userEmail) async {
+    if (userEmail == null) {
+      return [];
     }
+
+    _todos = await _todoService.fetchUserTodos(userEmail);
+    notifyListeners();
+    return _todos;
   }
+
+  Future<void> addTodo(Todo todo) async {
+    await _todoService.addTodo(todo);
+    _todos.add(todo);
+    notifyListeners();
+  }
+
+  Future<void> deleteTodo(int index) async {
+    final todoId = _todos[index].userId;
+    await _todoService.deleteTodo(todoId);
+    _todos.removeAt(index);
+    notifyListeners();
+  }
+
+  // Future<void> updateTodoCompletion(Todo todo, bool isCompleted) async {
+  //   final todoId = todo.userId;
+  //   await _todoService.updateTodoCompletion(todoId as Todo, isCompleted);
+  //   final todoIndex = _todos.indexWhere((element) => element.userId == todoId);
+  //   if (todoIndex != -1) {
+  //     _todos[todoIndex].isCompleted = isCompleted;
+  //     notifyListeners();
+  //   }
+  // }
 }

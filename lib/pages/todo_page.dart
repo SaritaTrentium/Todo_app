@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
 import '../widget/change_theme_widget.dart';
@@ -22,8 +25,6 @@ class _TodoPageState extends State<TodoPage> {
     @override
     Widget build(BuildContext context) {
       final todoProvider = Provider.of<TodoPageProvider>(context);
-      final todoBox = Hive.box<Todo>('todos');
-      final todos = todoBox.values.toList();
       return Scaffold(
         appBar: AppBar(
           title: Text("Add Todo"),
@@ -44,6 +45,11 @@ class _TodoPageState extends State<TodoPage> {
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                   ),
                 ),
+                validator: (value){
+                  if(value!.isNotEmpty){
+                    return "Please Enter Title";
+                  }
+                },
               ),
             ),
             Padding(
@@ -79,7 +85,13 @@ class _TodoPageState extends State<TodoPage> {
             ),
            ElevatedButton(
              onPressed: addTodo,
-
+             style: ButtonStyle(
+               backgroundColor: MaterialStateProperty.all(
+                 Theme.of(context).brightness == Brightness.light
+                     ? Colors.blue // Light mode background color
+                     : Colors.tealAccent.shade700, // Dark mode background color
+               ),
+             ),
              child: const Text("Add"),
            ),
           ],
@@ -114,67 +126,75 @@ class _TodoPageState extends State<TodoPage> {
       }
     }
   }
-  void addTodo() {
+
+  void addTodo() async {
     final todoProvider = Provider.of<TodoPageProvider>(context, listen: false);
-    final todoBox = Hive.box<Todo>('todos');
+
     final title = todoProvider.title.trim();
     final desc = todoProvider.desc.trim();
 
-    if(title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please Enter Title")));
-      return;
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        String userId = user!.uid;
+        String userEmail = user.email ?? "";
+
+        final todoBox = await Hive.openBox<Todo>('todos_${user.email}'); // Open the Hive box
+
+        DateTime oneDayAgo = selectedDateTime.subtract(const Duration(days: 1));
+        DateTime oneHourAgo = selectedDateTime.subtract(
+            const Duration(hours: 1));
+        DateTime tenMinuteAgo = selectedDateTime.subtract(
+            const Duration(minutes: 10));
+
+        notificationService.scheduleNotification(
+          id: 0,
+          title: title,
+          desc: 'Don\'t forget to complete your todo: $title',
+          payload: 'Time Left 10 minutes',
+          scheduleNotificationTime: tenMinuteAgo,
+        );
+
+        notificationService.scheduleNotification(
+          id: 0,
+          title: title,
+          desc: 'Don\'t forget to complete your todo: $title',
+          payload: 'Time Left 10 minutes',
+          scheduleNotificationTime: oneHourAgo,
+        );
+
+        notificationService.scheduleNotification(
+          id: 0,
+          title: title,
+          desc: 'Don\'t forget to complete your todo: $title',
+          payload: 'Time Left 10 minutes',
+          scheduleNotificationTime: oneDayAgo,
+        );
+
+        final newTodo = Todo(
+          title: title,
+          desc: desc,
+          deadline: selectedDateTime,
+          userId: userEmail,
+        );
+
+        final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
+        setState(() {
+          todoListProvider.addTodo(newTodo);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Added Successfully"),),);
+
+        Navigator.pop(context);
+        await Future.delayed(Duration(seconds: 1));
+
+        //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage()), (route) => false);
+      } else{
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not Exist")));
+      }
+    } catch(error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
     }
-
-    DateTime oneDayAgo = selectedDateTime.subtract(const Duration(days: 1));
-    DateTime oneHourAgo = selectedDateTime.subtract(const Duration(hours: 1));
-    DateTime tenMinuteAgo = selectedDateTime.subtract(const Duration(minutes: 10));
-
-      notificationService.scheduleNotification(
-        id: 0,
-        title: title,
-        desc: 'Don\'t forget to complete your todo: $title',
-        payload: 'Time Left 10 minutes',
-        scheduleNotificationTime: tenMinuteAgo,
-      );
-
-    notificationService.scheduleNotification(
-      id: 0,
-      title: title,
-      desc: 'Don\'t forget to complete your todo: $title',
-      payload: 'Time Left 10 minutes',
-      scheduleNotificationTime: oneHourAgo,
-    );
-
-    notificationService.scheduleNotification(
-      id: 0,
-      title: title,
-      desc: 'Don\'t forget to complete your todo: $title',
-      payload: 'Time Left 10 minutes',
-      scheduleNotificationTime: oneDayAgo,
-    );
-
-    // final newTodo = TodoApp(
-    //   id: UniqueKey().toString(), // Generate a unique ID for the todo
-    //   groupId: 'common_group_id', // Use a common group ID
-    //   userId: authProvider.userId, // Get the current user's UID
-    //   title: 'New Todo',
-    //   description: 'Description of the new todo',
-    //   isCompletedTodo: false,
-    // );
-
-    final newTodo = Todo(
-      title: title,
-      desc: desc,
-      deadline: todoProvider.selectedDateTime,
-      userId: 'id',
-    );
-      setState(() {
-        todoBox.add(newTodo);
-      });
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Added Successfully"),),);
-    final todos = todoBox.values.toList();
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage(todos: todos)), (route) => false);
-
   }
 }
 

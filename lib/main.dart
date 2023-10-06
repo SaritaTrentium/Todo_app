@@ -6,6 +6,7 @@ import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/models/user_model.dart';
 import 'package:todo_app/pages/login_page.dart';
 import 'package:todo_app/pages/signup_page.dart';
+import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
@@ -14,10 +15,13 @@ import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:firebase_core/firebase_core.dart';
 import 'providers/user_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await SharedPreferences.getInstance();
 
   NotificationService().initialize();
   tz.initializeTimeZones();
@@ -25,7 +29,7 @@ Future<void> main() async {
     await Hive.initFlutter();
     Hive.registerAdapter(TodoAdapter());
     Hive.registerAdapter(UsersAdapter());
-    await Hive.openBox<Users>('users');
+    //await Hive.openBox<Users>('users');
     await Hive.openBox<Todo>('todos');
 
   runApp(
@@ -40,13 +44,18 @@ Future<void> main() async {
       child: const MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+class _MyAppState extends State<MyApp> {
+  @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeChangerProvider>(context);
-    final todoBox = Hive.box<Todo>('todos');
+    // final todoBox = Hive.box<Todo>('todos');
+    // final todos = todoBox.values.toList();
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -54,13 +63,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot){
-          if(snapshot.hasData) {
-            return LoginPage();
-          }else {
-            return SignUpPage();
-          }
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasData) {
+              return LoginPage();
+            } else {
+              return LoginPage();
+            }
         }
       ),
     );

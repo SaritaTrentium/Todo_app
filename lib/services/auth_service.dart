@@ -4,7 +4,6 @@ import 'package:hive/hive.dart';
 import 'package:todo_app/models/user_model.dart';
 import '../models/todo_model.dart';
 import '../pages/todo_list_page.dart';
-import 'firebase_function.dart';
 
 class AuthServices {
 
@@ -21,7 +20,7 @@ class AuthServices {
 
           await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
           await FirebaseAuth.instance.currentUser!.updateEmail(email);
-          await FirestoreServices.saveUser(name, email,password, userCredential.user!.uid);
+         // await FirestoreServices.saveUser(email, getUserId);
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Registration Successfully")));
 
@@ -44,14 +43,14 @@ class AuthServices {
   }
 
   static  signInUser(String email, String password, BuildContext context)async {
-    final todoBox = Hive.box<Todo>('todos');
-    final todos = todoBox.values.toList();
+    // final todoBox = Hive.box<Todo>('todos');
+    // final todos = todoBox.values.toList();
     try{
     final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
         final userId = userCredential.user!.uid;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("You are Logged in")));
-
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TodoListPage(todos: todos)));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TodoListPage()));
+        //  FirestoreServices.getUserData(email);
 
     }on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

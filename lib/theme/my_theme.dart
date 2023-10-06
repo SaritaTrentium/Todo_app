@@ -4,32 +4,24 @@ class MyTheme{
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
     brightness: Brightness.dark,
-    primaryColor: Colors.blueGrey,
-    hintColor: Colors.white,
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.greenAccent,
-      ),
-    ),
+    primaryColorDark: Colors.tealAccent,
     colorScheme: ColorScheme.dark(
       background: Colors.black,
       primary: Colors.grey[900]!,
       secondary: Colors.grey[80]!,
+      onBackground: Colors.tealAccent,
     ),
     scaffoldBackgroundColor: Colors.black,
   );
 
-  static final ThemeData lightTheme = ThemeData(
+  static final ThemeData lightTheme = ThemeData.light().copyWith(
   brightness: Brightness.light,
-  elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
-      ),
-    ),
+  primaryColorLight: Colors.blue,
   colorScheme: ColorScheme.light(
     background: Colors.white,
     primary: Colors.teal,
     secondary: Colors.white,
+    onBackground: Colors.blue,
   ),
 );
 }
