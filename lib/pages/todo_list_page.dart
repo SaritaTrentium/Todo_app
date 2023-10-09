@@ -93,10 +93,6 @@ class _TodoListPageState extends State<TodoListPage> {
             return const Center(
               child: Text("No Todo Yet.", style: TextStyle(fontSize: 20),),
             );
-          } else if( todos == null) {
-             return Center(
-               child: CircularProgressIndicator(),
-             );
           }
           else {
             return buildTodoList(todos);
@@ -122,15 +118,17 @@ class _TodoListPageState extends State<TodoListPage> {
                     leading: Checkbox(
                       value: todos[index].isCompleted,
                       onChanged: (bool? newValue) {
-                        setState(() {
-                          todos[index].isCompleted = newValue ?? false;
-                        });
+                         setState(() {
+                           todos[index].isCompleted = newValue ?? false;
+                         });
+                         print('Checkbox value is: $newValue');
                       },
                     ),
                     title: Text(todos[index].title,
                         style: TextStyle(decoration: todos[index].isCompleted!
                             ? TextDecoration.lineThrough
-                            : TextDecoration.none,),),
+                            : TextDecoration.none,
+                        ),),
                     subtitle: Text(todos[index].desc),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -138,7 +136,7 @@ class _TodoListPageState extends State<TodoListPage> {
                         IconButton(onPressed: () {
                           final  user = FirebaseAuth.instance.currentUser;
                           if(user != null){
-                            final todoBox = Hive.box<Todo>('todos_${user!.email}');
+                            final todoBox = Hive.box<Todo>('todos_${user.email}');
                             try{
                               setState(() {
                                 todoListProvider.deleteTodo(index);
