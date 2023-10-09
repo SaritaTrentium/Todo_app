@@ -46,20 +46,6 @@ class TodoService{
     }
   }
 
-  // Future<void> updateTodoCompletion(Todo todo, bool isCompleted) async {
-  //   try {
-  //     final user = FirebaseAuth.instance.currentUser;
-  //     await _firestore
-  //         .collection('users')
-  //         .doc(user!.uid)
-  //         .collection('todos')
-  //         .doc(todo.userId)
-  //         .update({'isCompleted': isCompleted});
-  //   } catch (error) {
-  //     throw error.toString();
-  //   }
-  // }
-
   Future<void> deleteTodo(String todoId) async {
     try {
       final user = FirebaseAuth.instance.currentUser;

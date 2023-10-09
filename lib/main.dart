@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else if (snapshot.hasData) {
-              return LoginPage();
+              return TodoListPage();
             } else {
               return LoginPage();
             }

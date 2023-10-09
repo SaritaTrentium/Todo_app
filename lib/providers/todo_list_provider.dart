@@ -32,13 +32,4 @@ class TodoListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> updateTodoCompletion(Todo todo, bool isCompleted) async {
-  //   final todoId = todo.userId;
-  //   await _todoService.updateTodoCompletion(todoId as Todo, isCompleted);
-  //   final todoIndex = _todos.indexWhere((element) => element.userId == todoId);
-  //   if (todoIndex != -1) {
-  //     _todos[todoIndex].isCompleted = isCompleted;
-  //     notifyListeners();
-  //   }
-  // }
 }

@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
@@ -19,6 +17,7 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
+  final _formKey = GlobalKey<FormState>();
   NotificationService notificationService = NotificationService();
   DateTime selectedDateTime = DateTime.now();
 
@@ -33,68 +32,73 @@ class _TodoPageState extends State<TodoPage> {
             ChangeThemeButtonWidget(),
           ],
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextFormField(
-                onChanged: (value) => todoProvider.updateTitle(value),
-                decoration: const InputDecoration(
-                  labelText: 'Enter Title',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+        body: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  onChanged: (value) => todoProvider.updateTitle(value),
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Title',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    ),
                   ),
-                ),
-                validator: (value){
-                  if(value!.isNotEmpty){
-                    return "Please Enter Title";
-                  }
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextFormField(
-                onChanged: (value) => todoProvider.updateDesc(value),
-                decoration: const InputDecoration(
-                  labelText: 'Enter Description',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  ),
+                  validator: (value){
+                    if(value!.isEmpty){
+                        return "Please Enter Title";
+                      }
+                    return null;
+                  },
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextFormField(
-                readOnly: true, // Make the field read-only
-                controller: TextEditingController(
-                  text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)
-                ),
-                onTap: () => _selectDateAndTime(context), // Show the DatePicker
-                decoration: const InputDecoration(
-                  labelText: 'Select Date And Time',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  onChanged: (value) => todoProvider.updateDesc(value),
+                  decoration: const InputDecoration(
+                    labelText: 'Enter Description',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-           ElevatedButton(
-             onPressed: addTodo,
-             style: ButtonStyle(
-               backgroundColor: MaterialStateProperty.all(
-                 Theme.of(context).brightness == Brightness.light
-                     ? Colors.blue // Light mode background color
-                     : Colors.tealAccent.shade700, // Dark mode background color
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextFormField(
+                  readOnly: true, // Make the field read-only
+                  controller: TextEditingController(
+                    text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)
+                  ),
+                  onTap: () => _selectDateAndTime(context), // Show the DatePicker
+                  decoration: const InputDecoration(
+                    labelText: 'Select Date And Time',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+             ElevatedButton(
+               onPressed: addTodo,
+               style: ButtonStyle(
+                 backgroundColor: MaterialStateProperty.all(
+                   Theme.of(context).brightness == Brightness.light
+                       ? Colors.blue // Light mode background color
+                       : Colors.tealAccent.shade700, // Dark mode background color
+                 ),
                ),
+               child: const Text("Add"),
              ),
-             child: const Text("Add"),
-           ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -128,72 +132,80 @@ class _TodoPageState extends State<TodoPage> {
   }
 
   void addTodo() async {
-    final todoProvider = Provider.of<TodoPageProvider>(context, listen: false);
+    if (_formKey.currentState!.validate()) {
+      final todoProvider = Provider.of<TodoPageProvider>(
+          context, listen: false);
 
-    final title = todoProvider.title.trim();
-    final desc = todoProvider.desc.trim();
 
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        String userId = user!.uid;
-        String userEmail = user.email ?? "";
+      final title = todoProvider.title.trim();
+      final desc = todoProvider.desc.trim();
 
-        final todoBox = await Hive.openBox<Todo>('todos_${user.email}'); // Open the Hive box
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          String userId = user!.uid;
+          String userEmail = user.email ?? "";
 
-        DateTime oneDayAgo = selectedDateTime.subtract(const Duration(days: 1));
-        DateTime oneHourAgo = selectedDateTime.subtract(
-            const Duration(hours: 1));
-        DateTime tenMinuteAgo = selectedDateTime.subtract(
-            const Duration(minutes: 10));
+          final todoBox = await Hive.box<Todo>('todos_${user.email}'); // Open the Hive box
 
-        notificationService.scheduleNotification(
-          id: 0,
-          title: title,
-          desc: 'Don\'t forget to complete your todo: $title',
-          payload: 'Time Left 10 minutes',
-          scheduleNotificationTime: tenMinuteAgo,
-        );
+          DateTime oneDayAgo = selectedDateTime.subtract(
+              const Duration(days: 1));
+          DateTime oneHourAgo = selectedDateTime.subtract(
+              const Duration(hours: 1));
+          DateTime tenMinuteAgo = selectedDateTime.subtract(
+              const Duration(minutes: 10));
 
-        notificationService.scheduleNotification(
-          id: 0,
-          title: title,
-          desc: 'Don\'t forget to complete your todo: $title',
-          payload: 'Time Left 10 minutes',
-          scheduleNotificationTime: oneHourAgo,
-        );
+          notificationService.scheduleNotification(
+            id: 0,
+            title: title,
+            desc: 'Don\'t forget to complete your todo: $title',
+            payload: 'Time Left 10 minutes',
+            scheduleNotificationTime: tenMinuteAgo,
+          );
 
-        notificationService.scheduleNotification(
-          id: 0,
-          title: title,
-          desc: 'Don\'t forget to complete your todo: $title',
-          payload: 'Time Left 10 minutes',
-          scheduleNotificationTime: oneDayAgo,
-        );
+          notificationService.scheduleNotification(
+            id: 0,
+            title: title,
+            desc: 'Don\'t forget to complete your todo: $title',
+            payload: 'Time Left 10 minutes',
+            scheduleNotificationTime: oneHourAgo,
+          );
 
-        final newTodo = Todo(
-          title: title,
-          desc: desc,
-          deadline: selectedDateTime,
-          userId: userEmail,
-        );
+          notificationService.scheduleNotification(
+            id: 0,
+            title: title,
+            desc: 'Don\'t forget to complete your todo: $title',
+            payload: 'Time Left 10 minutes',
+            scheduleNotificationTime: oneDayAgo,
+          );
 
-        final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
-        setState(() {
-          todoListProvider.addTodo(newTodo);
-        });
+          final newTodo = Todo(
+            title: title,
+            desc: desc,
+            deadline: selectedDateTime,
+            userId: userEmail,
+          );
+
+          final todoListProvider = Provider.of<TodoListProvider>(
+              context, listen: false);
+          setState(() {
+            todoListProvider.addTodo(newTodo);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Added Successfully"),),);
+
+          Navigator.pop(context);
+          await Future.delayed(Duration(seconds: 1));
+
+          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage()), (route) => false);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("User Not Exist")));
+        }
+      } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Added Successfully"),),);
-
-        Navigator.pop(context);
-        await Future.delayed(Duration(seconds: 1));
-
-        //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage()), (route) => false);
-      } else{
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not Exist")));
+            SnackBar(content: Text(error.toString())));
       }
-    } catch(error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 }

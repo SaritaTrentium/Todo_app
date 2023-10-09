@@ -17,31 +17,34 @@ class TodoListPage extends StatefulWidget {
   State<TodoListPage> createState() => _TodoListPageState();
 }
 class _TodoListPageState extends State<TodoListPage> {
-  final user = FirebaseAuth.instance.currentUser;
 
-  void initState() {
-    super.initState();
-    getUserTodos();
-  }
-
-  Future<void> getUserTodos() async {
-    // Fetch user-specific todos when the page is initialized
-    final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
-    if(user != null){
-      final todos = todoListProvider.fetchUserTodos(user!.email);
-      final todoBox = await Hive.box<Todo>('todos_${user!.email}');
-      print('Fetch User Specific Todos -------> $todos');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
-    final todos = todoListProvider.todos;
 
-    print('Current User Logged In -----${user!.email}');
-    print('Store todoItems Length -----${todos.length}');
+    final user = FirebaseAuth.instance.currentUser;
+    try{
+      if (user != null){
+        print('Current User Login: ${user.email}');
+        setState(() {
+          Hive.openBox<Todo>('todos_${user.email}');
+          todoListProvider.fetchUserTodos(user.email);
+        });
+      } else {
+        setState(() {
+          authProvider.isUserSignedIn();
+        });
+        print("User is null. try to signUp");
+      }
+    }catch(error){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+    }
+
+    final todos = todoListProvider.todos;
+    todos.clear();
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -55,11 +58,24 @@ class _TodoListPageState extends State<TodoListPage> {
           ChangeThemeButtonWidget(),
           IconButton(onPressed: () async {
             if(authProvider.isUserSignedIn()) {
-                authProvider.signOut();
-                final todoBox = await Hive.box<Todo>('todos_${user!.email}');
-                await todoBox.close();
-                saveLoginState(false);
-                print('User sign out------${user!.email}');
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null){
+                  final todoBox = await Hive.box<Todo>('todos_${user.email}');
+                  await todoBox.close();
+                  authProvider.signOut();
+                  saveLoginState(false);
+                  print('User sign out for this email------${user.email}');
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                }else {
+                  print("User Not Signed In.");
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                }
+            } else{
+                print("Go to the Login Page");
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => LoginPage()));
@@ -70,13 +86,19 @@ class _TodoListPageState extends State<TodoListPage> {
       body: Consumer<TodoListProvider>(
         builder: (context, todoListProvider, _) {
           final todos = todoListProvider.todos;
+          print('Store todoItems Length -----${todos.length}');
 
           // Use the todos data in your UI
           if (todos.isEmpty) {
             return const Center(
               child: Text("No Todo Yet.", style: TextStyle(fontSize: 20),),
             );
-          } else {
+          } else if( todos == null) {
+             return Center(
+               child: CircularProgressIndicator(),
+             );
+          }
+          else {
             return buildTodoList(todos);
           }
         },
@@ -108,21 +130,33 @@ class _TodoListPageState extends State<TodoListPage> {
                     title: Text(todos[index].title,
                         style: TextStyle(decoration: todos[index].isCompleted!
                             ? TextDecoration.lineThrough
-                            : TextDecoration.none,)),
+                            : TextDecoration.none,),),
                     subtitle: Text(todos[index].desc),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(onPressed: () {
-                          User? user = FirebaseAuth.instance.currentUser;
-                          final todoBox = Hive.box<Todo>('todos_${user!.email}');
-                          setState(() {
-                            todoListProvider.deleteTodo(index);
-                            todoBox.deleteAt(index);
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Delete Successfully"),),);
+                          final  user = FirebaseAuth.instance.currentUser;
+                          if(user != null){
+                            final todoBox = Hive.box<Todo>('todos_${user!.email}');
+                            try{
+                              setState(() {
+                                todoListProvider.deleteTodo(index);
+                                todoBox.deleteAt(index);
+                              });
+                            } catch(error){
+                              print('Error deleting todo: $error');
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Delete Successfully"),),);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("You are not signed in."),
+                              ),
+                            );
+                          }
                         }, icon: const Icon(Icons.delete)),
                       ],
                     ),

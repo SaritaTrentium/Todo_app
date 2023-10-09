@@ -115,19 +115,27 @@ class SignUpPageState extends State<SignUpPage> {
                   String name = nameController.text.trim();
                   String email = emailController.text.trim();
                   String password = pwdController.text.trim();
-                  print(name + email + password);
-                  authProvider.signUpUser(name, email, password, context);
-                  saveLoginState(true);
-                  final user = FirebaseAuth.instance.currentUser;
-                  final todoBox = await Hive.openBox<Todo>('todos_${user!.email}');
-                  await todoBox.clear();
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => TodoListPage(),
-                    ),
-                  );
+                  print('Sign Up With This Name :$name ,Email: $email and password: $password');
 
-                }
+                   authProvider.signUpUser(name, email, password, context);
+                    final user = FirebaseAuth.instance.currentUser;
+                    try{
+                      if(user != null){
+                        saveLoginState(true);
+                        final todoBox = await Hive.openBox<Todo>('todos_${user!.email}');
+                        await todoBox.clear();
+                      } else{
+                        print("Again SignUp Properly");
+                      }
+                    }catch (error){
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SignUp Process not working Properly.")));
+                    }
+                  }else {
+                    // Handle the case where sign-up failed
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text("Sign-up failed. Please try again."),
+                    ));
+                  }
               }, child: const Text('Create an account')),
               const SizedBox(
                 height: 10,

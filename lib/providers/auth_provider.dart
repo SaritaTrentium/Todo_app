@@ -12,9 +12,9 @@ class AuthProvider with ChangeNotifier{
 
   Future<void> signUpUser(String name, String email, String password, BuildContext context) async {
     try {
-      String getUserId = await AuthServices.signUpUser(name, email, password, context);
+      await AuthServices.signUpUser(name, email, password, context);
     // print('Get userID AuthProvider : $getUserId');
-        _userId = getUserId;
+       // _userId = getUserId;
         _isLoggedIn = true;
         notifyListeners();
     } catch (e) {
@@ -62,6 +62,11 @@ class AuthProvider with ChangeNotifier{
 
   bool isUserSignedIn() {
     final user = FirebaseAuth.instance.currentUser;
-    return user != null;
+
+    if(user != null){
+      return true;
+    }else {
+      return false;
+    }
   }
 }
