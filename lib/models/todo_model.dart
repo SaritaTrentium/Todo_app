@@ -18,5 +18,5 @@ class Todo extends HiveObject{
   @HiveField(4)
   final String userId;
 
-  Todo({required this.title, required this.desc,required this.deadline , this.isCompleted= false, required this.userId});
+  Todo({required this.title, required this.desc,required this.deadline , this.isCompleted = false, required this.userId});
 }

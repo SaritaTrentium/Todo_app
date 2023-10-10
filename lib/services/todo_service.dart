@@ -31,16 +31,18 @@ class TodoService{
   Future<void> addTodo(Todo todo) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      await _firestore
-          .collection('users')
-          .doc(user!.email)
-          .collection('todos')
-          .add({
-        'title': todo.title,
-        'description': todo.desc,
-        'isCompleted': todo.isCompleted,
-        'deadline': todo.deadline,
-      });
+      if(user != null){
+        await _firestore
+            .collection('users')
+            .doc(user.email)
+            .collection('todos')
+            .add({
+          'title': todo.title,
+          'description': todo.desc,
+          'isCompleted': todo.isCompleted,
+          'deadline': todo.deadline,
+        });
+      }
     } catch (error) {
       throw error.toString();
     }
@@ -49,13 +51,30 @@ class TodoService{
   Future<void> deleteTodo(String todoId) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      await _firestore
-          .collection('users')
-          .doc(user!.email)
-          .collection('todos')
-          .doc(todoId)
-          .delete();
+      if(user != null){
+        await _firestore
+            .collection('users')
+            .doc(user.email)
+            .collection('todos')
+            .doc(todoId)
+            .delete();
+      }
     } catch (error) {
+      throw error.toString();
+    }
+  }
+
+  Future<void> updateTodoCompletion(Todo todo, bool isCompleted) async{
+    try{
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await _firestore.collection('users')
+            .doc(user.email)
+            .collection('todos')
+            .doc(todo.userId)
+            .update({'isCompleted': isCompleted});
+      }
+    }catch(error){
       throw error.toString();
     }
   }

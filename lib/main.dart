@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/models/user_model.dart';
 import 'package:todo_app/pages/login_page.dart';
-import 'package:todo_app/pages/signup_page.dart';
 import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';

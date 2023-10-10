@@ -4,7 +4,7 @@ import '../models/todo_model.dart';
 
 class TodoListProvider extends ChangeNotifier {
   final TodoService _todoService = TodoService();
-  final String _todoBoxName = 'todos';
+  // final String _todoBoxName = 'todos';
 
   List<Todo> _todos = [];
   List<Todo> get todos => _todos;
@@ -32,4 +32,15 @@ class TodoListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+  Future<void> updateTodoCompletion(Todo todo, bool isCompleted) async{
+    print('UserId when update icCompleted : ${todo.userId}');
+    final todoId= todo.userId;
+    await _todoService.updateTodoCompletion(todo, isCompleted);
+    final todoIndex = _todos.indexWhere((todoUpdate) => todoUpdate.userId == todoId);
+    if(todoIndex != -1){
+      _todos[todoIndex].isCompleted = isCompleted;
+      notifyListeners();
+    }
+  }
 }

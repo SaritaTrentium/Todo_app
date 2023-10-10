@@ -42,8 +42,7 @@ class _TodoListPageState extends State<TodoListPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
     }
 
-    final todos = todoListProvider.todos;
-    todos.clear();
+   // final todos = todoListProvider.todos;
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -118,10 +117,15 @@ class _TodoListPageState extends State<TodoListPage> {
                     leading: Checkbox(
                       value: todos[index].isCompleted,
                       onChanged: (bool? newValue) {
-                         setState(() {
-                           todos[index].isCompleted = newValue ?? false;
-                         });
-                         print('Checkbox value is: $newValue');
+                        if(newValue != null){
+                          setState(() {
+                            todos[index].isCompleted = newValue;
+                          });
+                          todoListProvider.updateTodoCompletion(todos[index], newValue);
+                          print('Checkbox value is: $newValue');
+                        }else {
+                          print("checkbox value null");
+                        }
                       },
                     ),
                     title: Text(todos[index].title,
