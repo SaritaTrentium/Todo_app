@@ -16,7 +16,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'providers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -28,7 +27,6 @@ Future<void> main() async {
     await Hive.initFlutter();
     Hive.registerAdapter(TodoAdapter());
     Hive.registerAdapter(UsersAdapter());
-    //await Hive.openBox<Users>('users');
     await Hive.openBox<Todo>('todos');
 
   runApp(
@@ -53,8 +51,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeChangerProvider>(context);
-    // final todoBox = Hive.box<Todo>('todos');
-    // final todos = todoBox.values.toList();
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,

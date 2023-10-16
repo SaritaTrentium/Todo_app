@@ -35,7 +35,9 @@ class NotificationService {
   Future showNotification({int id = 0,
     String? title,
     String? body,
-    String? payload,}) async {
+    String? payload,
+    required tz.TZDateTime scheduledDate,
+  }) async {
     return flutterLocalNotificationsPlugin.show(
         id, title, body, await notificationDetails());
   }

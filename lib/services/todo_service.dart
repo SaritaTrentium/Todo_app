@@ -11,6 +11,7 @@ class TodoService{
           .collection('users')
           .doc(userEmail)
           .collection('todos')
+          .orderBy('title')
           .get();
 
       return querySnapshot.docs.map((doc) {
@@ -78,4 +79,28 @@ class TodoService{
       throw error.toString();
     }
   }
+
+  // Future<List<Todo>> fetchSearchTodos(String userEmail, String query) async{
+  //   try{
+  //     final QuerySnapshot querySnapshot = await _firestore
+  //         .collection('users')
+  //         .doc(userEmail)
+  //         .collection('todos')
+  //         .where('title',isGreaterThanOrEqualTo: query)
+  //         .get();
+  //
+  //     final List<Todo> searchResults = querySnapshot.docs.map((doc) {
+  //       return Todo(
+  //         title: doc['title'] ?? '',
+  //         desc: doc['description'] ?? '',
+  //         isCompleted: doc['isCompleted'] ?? false,
+  //         deadline: null,
+  //         userId: doc.id,
+  //       );
+  //     }).toList();
+  //     return searchResults;
+  //   } catch (error){
+  //       throw Future.error.toString();
+  //   }
+  //}
  }

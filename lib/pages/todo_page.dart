@@ -34,70 +34,71 @@ class _TodoPageState extends State<TodoPage> {
         ),
         body: Form(
           key: _formKey,
-          child: Column(
-            children: [
-
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextFormField(
-                  onChanged: (value) => todoProvider.updateTitle(value),
-                  decoration: const InputDecoration(
-                    labelText: 'Enter Title',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextFormField(
+                    onChanged: (value) => todoProvider.updateTitle(value),
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Title',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      ),
                     ),
-                  ),
-                  validator: (value){
-                    if(value!.isEmpty){
+                    validator: (value){
+                      if(value!.isEmpty){
                         return "Please Enter Title";
                       }
-                    return null;
-                  },
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextFormField(
-                  onChanged: (value) => todoProvider.updateDesc(value),
-                  decoration: const InputDecoration(
-                    labelText: 'Enter Description',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextFormField(
+                    onChanged: (value) => todoProvider.updateDesc(value),
+                    decoration: const InputDecoration(
+                      labelText: 'Enter Description',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: TextFormField(
-                  readOnly: true, // Make the field read-only
-                  controller: TextEditingController(
-                    text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)
-                  ),
-                  onTap: () => _selectDateAndTime(context), // Show the DatePicker
-                  decoration: const InputDecoration(
-                    labelText: 'Select Date And Time',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextFormField(
+                    readOnly: true, // Make the field read-only
+                    controller: TextEditingController(
+                        text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)
+                    ),
+                    onTap: () => _selectDateAndTime(context), // Show the DatePicker
+                    decoration: const InputDecoration(
+                      labelText: 'Select Date And Time',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-             ElevatedButton(
-               onPressed: addTodo,
-               style: ButtonStyle(
-                 backgroundColor: MaterialStateProperty.all(
-                   Theme.of(context).brightness == Brightness.light
-                       ? Colors.blue // Light mode background color
-                       : Colors.tealAccent.shade700, // Dark mode background color
-                 ),
-               ),
-               child: const Text("Add"),
-             ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  onPressed: addTodo,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).brightness == Brightness.light
+                          ? Colors.blue // Light mode background color
+                          : Colors.tealAccent.shade700, // Dark mode background color
+                    ),
+                  ),
+                  child: const Text("Add"),
+                ),
+              ],
+            ),
           ),
         ),
       );

@@ -4,10 +4,12 @@ import '../models/todo_model.dart';
 
 class TodoListProvider extends ChangeNotifier {
   final TodoService _todoService = TodoService();
-  // final String _todoBoxName = 'todos';
 
   List<Todo> _todos = [];
   List<Todo> get todos => _todos;
+
+  List<Todo> _filteredTodos = [];
+  List<Todo> get filteredTodos => _filteredTodos;
 
   Future<List<Todo>> fetchUserTodos(String? userEmail) async {
     if (userEmail == null) {
@@ -32,7 +34,6 @@ class TodoListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> updateTodoCompletion(Todo todo, bool isCompleted) async{
     print('UserId when update icCompleted : ${todo.userId}');
     final todoId= todo.userId;
@@ -42,5 +43,17 @@ class TodoListProvider extends ChangeNotifier {
       _todos[todoIndex].isCompleted = isCompleted;
       notifyListeners();
     }
+  }
+  Future<List<Todo>> fetchSearchTodos(String? query) async {
+    if(query == null || query.isEmpty){
+      _filteredTodos = _todos;
+    }else{
+      _filteredTodos = _todos.where((todos)
+      => todos.title.toLowerCase()
+          .contains(query.toLowerCase()))
+          .toList();
+    }
+      notifyListeners();
+      return _filteredTodos;
   }
 }
