@@ -17,44 +17,56 @@ class TodoListPage extends StatefulWidget {
   State<TodoListPage> createState() => _TodoListPageState();
 }
 class _TodoListPageState extends State<TodoListPage> {
-  List<Todo>? filteredTodos;
+  late AuthProvider _authProvider;
+  late TodoListProvider _todoListProvider;
+  late List<Todo> filteredTodos = [];
   String? query;
 
   @override
   void initState() {
+     super.initState();
+     checkUsersTodo();
+  }
 
-    final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
-    final user = FirebaseAuth.instance.currentUser;
+  Future<void> checkUsersTodo() async {
+    _todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
+    final user = await FirebaseAuth.instance.currentUser;
     if(user != null){
       query = '';
       Hive.openBox<Todo>('todos_${user.email}');
       filteredTodos = <Todo>[];
-      todoListProvider.fetchUserTodos(user.email).then((todos) {
-         setState(() {
-            filteredTodos = todos;
-         });
+      _todoListProvider.fetchUserTodos(user.email).then((todos) {
+        setState(() {
+          filteredTodos = todos;
+        });
       });
-        print(filteredTodos);
-        print('Filter data when Before initialized time: ${user.email} ${todoListProvider.todos.length}');
-        print('Filter data when after initialized time: ${todoListProvider.todos}');
+      print(filteredTodos);
+      print('Filter data when Before initialized time: ${user.email} ${_todoListProvider.todos.length}');
+      print('Filter data when after initialized time: ${_todoListProvider.todos}');
     } else{
       setState(() {
         print("User is null. Try to sign in");
       });
     }
-    super.initState();
+
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    filteredTodos;
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
+    _authProvider = Provider.of<AuthProvider>(context);
+    _todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
     TextEditingController searchController = TextEditingController();
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const TodoPage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TodoPage()));
         },
         child: const Icon(Icons.add),
       ),
@@ -63,28 +75,22 @@ class _TodoListPageState extends State<TodoListPage> {
         actions: [
           ChangeThemeButtonWidget(),
           IconButton(onPressed: () async {
-            if(authProvider.isUserSignedIn()) {
+            if(_authProvider.isUserSignedIn()) {
               final user = FirebaseAuth.instance.currentUser;
               if (user != null){
                 final todoBox = await Hive.box<Todo>('todos_${user.email}');
                 await todoBox.close();
-                authProvider.signOut();
+                _authProvider.signOut();
                 saveLoginState(false);
                 print('User sign out for this email------${user.email}');
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                Navigator.of(context).pushNamed('/');
               }else {
                 print("User Not Signed In.");
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                Navigator.of(context).pushNamed('/');
               }
             } else{
               print("Go to the Login Page");
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()));
+              Navigator.of(context).pushNamed('/');
             }
           }, icon: Icon(Icons.exit_to_app)),
         ],
@@ -95,7 +101,7 @@ class _TodoListPageState extends State<TodoListPage> {
           TextField(
             controller: searchController, // Make sure to add this line
             onChanged: (query) async {
-              filteredTodos = await todoListProvider.fetchSearchTodos(query);
+              filteredTodos = await _todoListProvider.fetchSearchTodos(query);
               print('fetch data when query not null ---$filteredTodos');
             },
             decoration: InputDecoration(
@@ -111,13 +117,13 @@ class _TodoListPageState extends State<TodoListPage> {
             child: Consumer<TodoListProvider>(
             builder: (context, todoListProvider, _) {
               // Use the todos data in your UI
-              if (filteredTodos!.isEmpty) {
+              if (filteredTodos.isEmpty) {
                 return const Center(
                   child: Text("No Todo Yet.", style: TextStyle(fontSize: 20),),
                 );
               }
               else {
-                return buildTodoList(filteredTodos!);
+                return buildTodoList(filteredTodos);
               }
             },
           ),
@@ -129,7 +135,7 @@ class _TodoListPageState extends State<TodoListPage> {
 
   Widget buildTodoList(List<Todo> filteredTodos) {
     final _formKey = GlobalKey<FormState>();
-    final todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
+   _todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
 
     return Form(
       key: _formKey,
@@ -147,7 +153,7 @@ class _TodoListPageState extends State<TodoListPage> {
                           setState(() {
                             filteredTodos[index].isCompleted = newValue;
                           });
-                          todoListProvider.updateTodoCompletion(filteredTodos[index], newValue);
+                          _todoListProvider.updateTodoCompletion(filteredTodos[index], newValue);
                           print('Checkbox value is: $newValue');
                         }else {
                           print("checkbox value null");
@@ -169,7 +175,7 @@ class _TodoListPageState extends State<TodoListPage> {
                             final todoBox = Hive.box<Todo>('todos_${user.email}');
                             try{
                               setState(() {
-                                todoListProvider.deleteTodo(index);
+                                _todoListProvider.deleteTodo(index);
                                 todoBox.deleteAt(index);
                               });
                             } catch(error){

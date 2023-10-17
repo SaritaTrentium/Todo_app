@@ -1,7 +1,8 @@
-import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/common/button.dart';
+import 'package:todo_app/common/textfield.dart';
 import 'package:todo_app/pages/signup_page.dart';
 import 'package:todo_app/pages/todo_list_page.dart';
 import '../providers/auth_provider.dart';
@@ -15,8 +16,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController pwdController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _pwdController = TextEditingController();
 
   // @override
   void initState() {
@@ -45,7 +46,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
+    late AuthProvider _authProvider;
+    _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       body: Form(
         key: _formKey,
@@ -59,71 +61,67 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-              child: TextFormField(
-                controller: emailController,
+              child: CustomTextField(
+                labelText: 'Enter your Email',
+                controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Enter Your Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
                 validator: (value) {
+                 final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
                   if (value!.isEmpty) {
                     return "Email can not be empty.";
+                  } else if(emailRegex.hasMatch(value)){
+                    return 'Invalid email format';
+                  }
+                  else{
+                    return null;
                   }
                 },
               ),
-            ),
+              ),
             Padding(
               padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-              child: TextFormField(
-                controller: pwdController,
+              child: CustomTextField(
+                labelText: 'Enter your password',
+                controller: _pwdController,
                 obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Enter Your Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "Password can not be empty.";
                   } else if (value.length < 6) {
                     return "Password length should be at least 6.";
                   }
-                },
-              ),
+                    return null;
+                  },
+                ),
             ),
             const SizedBox(
               height: 40,
             ),
-            ElevatedButton(onPressed: () async {
+            CustomElevatedButton(onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                final email = emailController.text.trim();
-                final password = pwdController.text.trim();
+                final email = _emailController.text.trim();
+                final password = _pwdController.text.trim();
                 try {
                   // Check if the user already exists
-                  final user = await authProvider.checkUserExists(
+                  final user = await _authProvider.checkUserExists(
                       email, password);
                   if (user != null) {
                     // User exists, log them in
-                    await authProvider.signInUser(email, password, context);
+                    await _authProvider.signInUser(email, password, context);
                     saveLoginState(true);
-                    authProvider.isUserSignedIn();
+                    _authProvider.isUserSignedIn();
                   } else {
                     // User doesn't exist, show an error message
                     // You can display a message here indicating that the user needs to sign up first
                     // You can also navigate to the signup page if needed
-                    Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context) => const SignUpPage()));
+                    Navigator.of(context).pushNamed('/signUp');
                   }
                 } catch (error) {
                   // Handle login error
                   print("User not Logged In First SignUp.");
                 }
               }
-            }, child: const Text('Login')),
+            }, text: 'Login'),
             const SizedBox(
               height: 10,
             ),
@@ -132,8 +130,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const Text("Don't have an account?"),
                 TextButton(onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) => const SignUpPage()));
+                  Navigator.of(context).pushNamed('signUp');
                 }, child: const Text('SignUp')),
               ],
             ),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/common/button.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
@@ -10,20 +11,21 @@ import 'package:todo_app/services/notification_service.dart';
 import '../widget/change_theme_widget.dart';
 
 class TodoPage extends StatefulWidget {
-  const TodoPage({super.key});
+  TodoPage({super.key});
 
   @override
   State<TodoPage> createState() => _TodoPageState();
 }
 
 class _TodoPageState extends State<TodoPage> {
+  late TodoPageProvider _todoPageProvider;
   final _formKey = GlobalKey<FormState>();
   NotificationService notificationService = NotificationService();
   DateTime selectedDateTime = DateTime.now();
 
     @override
     Widget build(BuildContext context) {
-      final todoProvider = Provider.of<TodoPageProvider>(context);
+      _todoPageProvider = Provider.of<TodoPageProvider>(context);
       return Scaffold(
         appBar: AppBar(
           title: Text("Add Todo"),
@@ -40,7 +42,7 @@ class _TodoPageState extends State<TodoPage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: TextFormField(
-                    onChanged: (value) => todoProvider.updateTitle(value),
+                    onChanged: (value) => _todoPageProvider.updateTitle(value),
                     decoration: const InputDecoration(
                       labelText: 'Enter Title',
                       border: OutlineInputBorder(
@@ -58,7 +60,7 @@ class _TodoPageState extends State<TodoPage> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: TextFormField(
-                    onChanged: (value) => todoProvider.updateDesc(value),
+                    onChanged: (value) => _todoPageProvider.updateDesc(value),
                     decoration: const InputDecoration(
                       labelText: 'Enter Description',
                       border: OutlineInputBorder(
@@ -86,16 +88,9 @@ class _TodoPageState extends State<TodoPage> {
                 const SizedBox(
                   height: 20,
                 ),
-                ElevatedButton(
+                CustomElevatedButton(
                   onPressed: addTodo,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).brightness == Brightness.light
-                          ? Colors.blue // Light mode background color
-                          : Colors.tealAccent.shade700, // Dark mode background color
-                    ),
-                  ),
-                  child: const Text("Add"),
+                  text: 'Add',
                 ),
               ],
             ),
@@ -134,12 +129,12 @@ class _TodoPageState extends State<TodoPage> {
 
   void addTodo() async {
     if (_formKey.currentState!.validate()) {
-      final todoProvider = Provider.of<TodoPageProvider>(
+      _todoPageProvider = Provider.of<TodoPageProvider>(
           context, listen: false);
 
 
-      final title = todoProvider.title.trim();
-      final desc = todoProvider.desc.trim();
+      final title = _todoPageProvider.title.trim();
+      final desc = _todoPageProvider.desc.trim();
 
       try {
         User? user = FirebaseAuth.instance.currentUser;
@@ -187,18 +182,18 @@ class _TodoPageState extends State<TodoPage> {
             userId: userEmail,
           );
 
-          final todoListProvider = Provider.of<TodoListProvider>(
+          late TodoListProvider _todoListProvider;
+           _todoListProvider = Provider.of<TodoListProvider>(
               context, listen: false);
           setState(() {
-            todoListProvider.addTodo(newTodo);
+            _todoListProvider.addTodo(newTodo);
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Added Successfully"),),);
 
           Navigator.pop(context);
-          await Future.delayed(Duration(seconds: 1));
+          //await Future.delayed(Duration(seconds: 1));
 
-          //Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => TodoListPage()), (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("User Not Exist")));
