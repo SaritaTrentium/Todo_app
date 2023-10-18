@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/models/user_model.dart';
-import '../pages/todo_list_page.dart';
+import 'package:todo_app/screens/todo_list_screen.dart';
 
 class AuthServices {
 
@@ -15,17 +14,13 @@ class AuthServices {
       if (firebaseUser != null) {
         final String getUserId = firebaseUser.uid;
         print('User Id during SignUp: $getUserId');
-        Users(userId: getUserId, email: email, password: password);
+       // Users(userId: getUserId, email: email, password: password);
 
         await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
         await FirebaseAuth.instance.currentUser!.updateEmail(email);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration Successfully")));
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => TodoListPage(),
-          ),
-        );
+        Navigator.of(context).pushReplacementNamed('/todoList');
         return getUserId;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -40,6 +35,10 @@ class AuthServices {
       } else if (e.code == 'email-already-in-use') {
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Email Provided already Exists.')));
+      }else if(e.code == 'The email address is badly formatted'){
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Email Provided already Exists.')));
+
       }
     }
     catch (e) {
@@ -57,8 +56,7 @@ class AuthServices {
 
       final user = FirebaseAuth.instance.currentUser;
       if(user != null){
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => TodoListPage()));
+        Navigator.of(context).pushReplacementNamed('/todoList');
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("You are not LogIn.")));

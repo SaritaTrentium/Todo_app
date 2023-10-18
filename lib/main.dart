@@ -1,15 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/models/user_model.dart';
-import 'package:todo_app/pages/login_page.dart';
-import 'package:todo_app/pages/todo_list_page.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
+import 'package:todo_app/screens/login_screen.dart';
+import 'package:todo_app/screens/signup_screen.dart';
+import 'package:todo_app/screens/todo_list_screen.dart';
+import 'package:todo_app/screens/todo_screen.dart';
 import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:firebase_core/firebase_core.dart';
@@ -17,6 +20,7 @@ import 'providers/user_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
+  var logger = Logger();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await SharedPreferences.getInstance();
@@ -29,6 +33,7 @@ Future<void> main() async {
     Hive.registerAdapter(UsersAdapter());
     await Hive.openBox<Todo>('todos');
 
+  logger.d("App Run");
   runApp(
     MultiProvider(
       providers: [
@@ -36,7 +41,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => ThemeChangerProvider()),
         ChangeNotifierProvider(create: (context) => UserModelProvider()),
         ChangeNotifierProvider(create: (context) => TodoListProvider()),
-        ChangeNotifierProvider(create: (context) => TodoPageProvider()),
+        ChangeNotifierProvider(create: (context) => TodoProvider()),
       ],
       child: const MyApp()));
 }
@@ -50,11 +55,12 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeChangerProvider>(context);
+    late ThemeChangerProvider _themeProvider;
+   _themeProvider = Provider.of<ThemeChangerProvider>(context);
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      themeMode: themeProvider.themeMode,
+      themeMode: _themeProvider.themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       home: StreamBuilder(
@@ -63,12 +69,18 @@ class _MyAppState extends State<MyApp> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else if (snapshot.hasData) {
-              return TodoListPage();
+              return TodoListScreen();
             } else {
-              return LoginPage();
+              return LoginScreen();
             }
         }
       ),
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/signUp': (context) => SignUpScreen(),
+        '/todoList': (context) => TodoListScreen(),
+        '/todo': (context) => TodoScreen(),
+      },
     );
   }
 }

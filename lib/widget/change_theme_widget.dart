@@ -12,7 +12,6 @@ class ChangeThemeButtonWidget extends StatelessWidget {
         value: themeProvider.themeMode == ThemeMode.dark,
         onChanged: (value) {
           themeProvider.toggleTheme();
-
     });
   }
 }

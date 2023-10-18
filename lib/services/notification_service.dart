@@ -32,7 +32,7 @@ class NotificationService {
     );
   }
 
-  Future showNotification({int id = 0,
+  Future showNotification({int id=0,
     String? title,
     String? body,
     String? payload,

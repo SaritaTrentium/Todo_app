@@ -1,23 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/common/button.dart';
-import 'package:todo_app/common/textfield.dart';
-import 'package:todo_app/pages/signup_page.dart';
-import 'package:todo_app/pages/todo_list_page.dart';
+import 'package:todo_app/common/custom_button.dart';
+import 'package:todo_app/common/custom_textfield.dart';
+import 'package:todo_app/common/validator.dart';
 import '../providers/auth_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
+  var logger;
+  Validator validator = Validator();
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _pwdController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController pwdController = TextEditingController();
 
   // @override
   void initState() {
@@ -33,8 +34,7 @@ class _LoginPageState extends State<LoginPage> {
         if(user != null){
           print('Login with the current Email: ${user.email}');
           saveLoginState(true);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const TodoListPage()));
+          Navigator.of(context).pushNamed('/todoList');
         }
       }else{
         print('SignUp First');
@@ -63,35 +63,18 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
               child: CustomTextField(
                 labelText: 'Enter your Email',
-                controller: _emailController,
+                controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                 final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-                  if (value!.isEmpty) {
-                    return "Email can not be empty.";
-                  } else if(emailRegex.hasMatch(value)){
-                    return 'Invalid email format';
-                  }
-                  else{
-                    return null;
-                  }
-                },
+                validator:(value) => Validator.validateTitle(emailController.text),
               ),
               ),
             Padding(
               padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
               child: CustomTextField(
                 labelText: 'Enter your password',
-                controller: _pwdController,
+                controller: pwdController,
                 obscureText: true,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Password can not be empty.";
-                  } else if (value.length < 6) {
-                    return "Password length should be at least 6.";
-                  }
-                    return null;
-                  },
+                validator:(value) => Validator.validateTitle(pwdController.text),
                 ),
             ),
             const SizedBox(
@@ -99,25 +82,19 @@ class _LoginPageState extends State<LoginPage> {
             ),
             CustomElevatedButton(onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                final email = _emailController.text.trim();
-                final password = _pwdController.text.trim();
+                final email = emailController.text.trim();
+                final password = pwdController.text.trim();
                 try {
-                  // Check if the user already exists
                   final user = await _authProvider.checkUserExists(
                       email, password);
                   if (user != null) {
-                    // User exists, log them in
                     await _authProvider.signInUser(email, password, context);
                     saveLoginState(true);
                     _authProvider.isUserSignedIn();
                   } else {
-                    // User doesn't exist, show an error message
-                    // You can display a message here indicating that the user needs to sign up first
-                    // You can also navigate to the signup page if needed
                     Navigator.of(context).pushNamed('/signUp');
                   }
                 } catch (error) {
-                  // Handle login error
                   print("User not Logged In First SignUp.");
                 }
               }
@@ -130,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const Text("Don't have an account?"),
                 TextButton(onPressed: () {
-                  Navigator.of(context).pushNamed('signUp');
+                  Navigator.of(context).pushReplacementNamed('/signUp');
                 }, child: const Text('SignUp')),
               ],
             ),

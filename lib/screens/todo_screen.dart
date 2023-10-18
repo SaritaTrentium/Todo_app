@@ -1,34 +1,41 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/common/button.dart';
+import 'package:todo_app/common/custom_appbar.dart';
+import 'package:todo_app/common/custom_button.dart';
+import 'package:todo_app/common/custom_textfield.dart';
+import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
-import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
-import '../widget/change_theme_widget.dart';
+import 'package:todo_app/widget/change_theme_widget.dart';
 
-class TodoPage extends StatefulWidget {
-  TodoPage({super.key});
+class TodoScreen extends StatefulWidget {
+  TodoScreen({super.key});
 
   @override
-  State<TodoPage> createState() => _TodoPageState();
+  State<TodoScreen> createState() => _TodoScreenState();
 }
 
-class _TodoPageState extends State<TodoPage> {
-  late TodoPageProvider _todoPageProvider;
+class _TodoScreenState extends State<TodoScreen> {
+  var logger;
   final _formKey = GlobalKey<FormState>();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descController = TextEditingController();
   NotificationService notificationService = NotificationService();
   DateTime selectedDateTime = DateTime.now();
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
     @override
     Widget build(BuildContext context) {
-      _todoPageProvider = Provider.of<TodoPageProvider>(context);
       return Scaffold(
-        appBar: AppBar(
-          title: Text("Add Todo"),
+        appBar: CustomAppBar(
+          title: 'Add Todo',
           centerTitle: true,
           actions: [
             ChangeThemeButtonWidget(),
@@ -41,48 +48,27 @@ class _TodoPageState extends State<TodoPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: TextFormField(
-                    onChanged: (value) => _todoPageProvider.updateTitle(value),
-                    decoration: const InputDecoration(
-                      labelText: 'Enter Title',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      ),
-                    ),
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return "Please Enter Title";
-                      }
-                      return null;
-                    },
+                     child: CustomTextField(
+                       controller: titleController,
+                       labelText: 'Enter Title',
+                       validator:(value) => Validator.validateTitle(titleController.text),
+                     ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CustomTextField(
+                    controller: descController,
+                    labelText: 'Enter Description',
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: TextFormField(
-                    onChanged: (value) => _todoPageProvider.updateDesc(value),
-                    decoration: const InputDecoration(
-                      labelText: 'Enter Description',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextFormField(
-                    readOnly: true, // Make the field read-only
+                  child: CustomTextField(
+                    readOnly: true,
                     controller: TextEditingController(
-                        text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)
-                    ),
-                    onTap: () => _selectDateAndTime(context), // Show the DatePicker
-                    decoration: const InputDecoration(
-                      labelText: 'Select Date And Time',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      ),
-                    ),
+                             text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)),
+                    labelText: 'Select Date And Time',
+                    onTap: () => _selectDateAndTime(context),
                   ),
                 ),
                 const SizedBox(
@@ -127,23 +113,28 @@ class _TodoPageState extends State<TodoPage> {
     }
   }
 
+  void scheduleNotification({
+    required int id,
+    required String title,
+    required DateTime scheduleNotificationTime,
+  }) {
+
+    notificationService.scheduleNotification(
+      id: id,
+      title: title,
+      desc: 'Don\'t forget to complete your todo: $title',
+      payload: 'Time Left ${scheduleNotificationTime.difference(DateTime.now()).inMinutes} minutes',
+      scheduleNotificationTime: scheduleNotificationTime,
+    );
+  }
   void addTodo() async {
     if (_formKey.currentState!.validate()) {
-      _todoPageProvider = Provider.of<TodoPageProvider>(
-          context, listen: false);
-
-
-      final title = _todoPageProvider.title.trim();
-      final desc = _todoPageProvider.desc.trim();
-
+      final title = titleController.text;
+      final desc = descController.text;
       try {
         User? user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          String userId = user!.uid;
           String userEmail = user.email ?? "";
-
-          final todoBox = await Hive.box<Todo>('todos_${user.email}'); // Open the Hive box
-
           DateTime oneDayAgo = selectedDateTime.subtract(
               const Duration(days: 1));
           DateTime oneHourAgo = selectedDateTime.subtract(
@@ -151,30 +142,21 @@ class _TodoPageState extends State<TodoPage> {
           DateTime tenMinuteAgo = selectedDateTime.subtract(
               const Duration(minutes: 10));
 
-          notificationService.scheduleNotification(
+          scheduleNotification(
             id: 0,
             title: title,
-            desc: 'Don\'t forget to complete your todo: $title',
-            payload: 'Time Left 10 minutes',
             scheduleNotificationTime: tenMinuteAgo,
           );
-
-          notificationService.scheduleNotification(
-            id: 0,
+          scheduleNotification(
+            id: 1,
             title: title,
-            desc: 'Don\'t forget to complete your todo: $title',
-            payload: 'Time Left 10 minutes',
             scheduleNotificationTime: oneHourAgo,
           );
-
-          notificationService.scheduleNotification(
-            id: 0,
+          scheduleNotification(
+            id: 2,
             title: title,
-            desc: 'Don\'t forget to complete your todo: $title',
-            payload: 'Time Left 10 minutes',
             scheduleNotificationTime: oneDayAgo,
           );
-
           final newTodo = Todo(
             title: title,
             desc: desc,
@@ -190,10 +172,7 @@ class _TodoPageState extends State<TodoPage> {
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Added Successfully"),),);
-
-          Navigator.pop(context);
-          //await Future.delayed(Duration(seconds: 1));
-
+            Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("User Not Exist")));
