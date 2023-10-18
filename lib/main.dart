@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
             } else if (snapshot.hasData) {
               return TodoListScreen();
             } else {
-              return LoginScreen();
+              return SignUpScreen();
             }
         }
       ),

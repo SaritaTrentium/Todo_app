@@ -79,38 +79,43 @@ class _TodoListScreenState extends State<TodoListScreen> {
         }, icon: Icon(Icons.exit_to_app)),
         ],
       ),
-      body: Column (
-        children: [
-          const SizedBox(height: 10),
-          TextField(
-            controller: searchController, // Make sure to add this line
-            onChanged: (query) async {
-              filteredTodos = await _todoListProvider.fetchSearchTodos(query);
-            },
-            decoration: InputDecoration(
-              labelText: "Search Todo",
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
+      body: SafeArea(
+        child: Column (
+          children: [
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0,right: 10.0),
+              child: TextField(
+                controller: searchController, // Make sure to add this line
+                onChanged: (query) async {
+                  filteredTodos = await _todoListProvider.fetchSearchTodos(query);
+                },
+                decoration: InputDecoration(
+                  labelText: "Search Todo",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: Consumer<TodoListProvider>(
-            builder: (context, todoListProvider, _) {
-              if (filteredTodos.isEmpty) {
-                return const Center(
-                  child: Text("No Todo Yet.", style: TextStyle(fontSize: 20),),
-                );
-              }
-              else {
-                return buildTodoList(filteredTodos);
-              }
-            },
-          ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Expanded(
+              child: Consumer<TodoListProvider>(
+              builder: (context, todoListProvider, _) {
+                if (filteredTodos.isEmpty) {
+                  return const Center(
+                    child: Text("No Todo Yet.", style: TextStyle(fontSize: 20),),
+                  );
+                }
+                else {
+                  return buildTodoList(filteredTodos);
+                }
+              },
+            ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -149,23 +154,29 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(onPressed: () {
-                          final user = FirebaseAuth.instance.currentUser;
-                          if(user != null){
-
-                            final todoBox = Hive.box<Todo>('todos_${user.email}');
-                                setState(() {
-                                  _todoListProvider.deleteTodo(index);
-                                });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Delete Successfully"),),);
-                         } else{
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Delete not working properly"),
-                              ),
+                          showDialog(context: context, builder: (BuildContext context){
+                            return AlertDialog(
+                              title: Text("Delete Confirmation"),
+                              content: Text("Are you sure you want to delete this item?"),
+                              actions: <Widget>[
+                                TextButton(onPressed: (){
+                                  Navigator.of(context).pop();
+                                }, child: Text("Cancel")),
+                                TextButton(onPressed: (){
+                                  final user = FirebaseAuth.instance.currentUser;
+                                  if(user != null){
+                                    setState(() {
+                                      _todoListProvider.deleteTodo(index);
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Delete Successfully"),),);
+                                  } else{
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Delete not working properly"),),);
+                                  }
+                                  Navigator.of(context).pop();
+                                }, child: Text("Delete"))
+                              ],
                             );
-                          }
+                          });
                         }, icon: const Icon(Icons.delete),),
                       ],
                     ),

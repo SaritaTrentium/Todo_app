@@ -21,7 +21,6 @@ class NotificationService {
     );
   }
 
-
   notificationDetails() {
     return const NotificationDetails(
       android: AndroidNotificationDetails('channel_id', 'Channel_name',

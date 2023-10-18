@@ -51,6 +51,7 @@ class _TodoScreenState extends State<TodoScreen> {
                      child: CustomTextField(
                        controller: titleController,
                        labelText: 'Enter Title',
+                       textInputAction: TextInputAction.next,
                        validator:(value) => Validator.validateTitle(titleController.text),
                      ),
                 ),
@@ -59,12 +60,14 @@ class _TodoScreenState extends State<TodoScreen> {
                   child: CustomTextField(
                     controller: descController,
                     labelText: 'Enter Description',
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: CustomTextField(
                     readOnly: true,
+                    textInputAction: TextInputAction.done,
                     controller: TextEditingController(
                              text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)),
                     labelText: 'Select Date And Time',

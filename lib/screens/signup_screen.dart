@@ -17,7 +17,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class SignUpScreenState extends State<SignUpScreen> {
-  var logger;
   final _formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -30,11 +29,12 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = false;
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
     if (_authProvider.isLoggedIn) {
       return LoginScreen();
-    }
+      }
     return Scaffold(
       body: Container(
         child: Form(
@@ -49,6 +49,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                 child: CustomTextField(
                   labelText: 'Enter your Name',
                   controller: nameController,
+                  textInputAction: TextInputAction.next,
                   validator:(value) => Validator.validateTitle(nameController.text),
                 ),
               ),
@@ -57,6 +58,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                 child: CustomTextField(
                   labelText: 'Enter your email',
                   controller: emailController,
+                  textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.emailAddress,
                   validator:(value) => Validator.validateTitle(emailController.text),
                 ),
@@ -66,6 +68,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                 child: CustomTextField(
                   labelText: 'Enter your password',
                   controller: pwdController,
+                  textInputAction: TextInputAction.done,
                   validator: (value) => Validator.validatePassword(pwdController.text),
                   obscureText: true,
                 ),
@@ -106,10 +109,12 @@ class SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   const Text('Already have an account?'),
                   TextButton(
-                      onPressed: () async{
-                        setState(() {
+                      onPressed: isLoading
+                      ? () {
+                            CircularProgressIndicator();
+                          }
+                      : () {
                             Navigator.of(context).pushReplacementNamed('/login');
-                          });
                         }, child: const Text('Login')),
                 ],
               ),

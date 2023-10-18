@@ -46,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = false;
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
@@ -64,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: CustomTextField(
                 labelText: 'Enter your Email',
                 controller: emailController,
+                textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.emailAddress,
                 validator:(value) => Validator.validateTitle(emailController.text),
               ),
@@ -73,6 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: CustomTextField(
                 labelText: 'Enter your password',
                 controller: pwdController,
+                textInputAction: TextInputAction.done,
                 obscureText: true,
                 validator:(value) => Validator.validateTitle(pwdController.text),
                 ),
@@ -80,33 +83,90 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(
               height: 40,
             ),
-            CustomElevatedButton(onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                final email = emailController.text.trim();
-                final password = pwdController.text.trim();
-                try {
-                  final user = await _authProvider.checkUserExists(
-                      email, password);
-                  if (user != null) {
-                    await _authProvider.signInUser(email, password, context);
-                    saveLoginState(true);
-                    _authProvider.isUserSignedIn();
-                  } else {
-                    Navigator.of(context).pushNamed('/signUp');
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: CustomElevatedButton(onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final email = emailController.text.trim();
+                    final password = pwdController.text.trim();
+                    try {
+                      final user = await _authProvider.checkUserExists(
+                          email, password);
+                      if (user != null) {
+                        await _authProvider.signInUser(email, password, context);
+                        saveLoginState(true);
+                        _authProvider.isUserSignedIn();
+                      } else {
+                        Navigator.of(context).pushNamed('/signUp');
+                      }
+                    } catch (error) {
+                      print("User not Logged In First SignUp.");
+                    }
                   }
-                } catch (error) {
-                  print("User not Logged In First SignUp.");
-                }
-              }
-            }, text: 'Login'),
+                }, text: 'Login'),
+              ),
+            ),
             const SizedBox(
               height: 10,
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Divider(
+                        height: 1,
+                        thickness: 1,
+                        indent: 10,
+                        endIndent: 10,
+                        color: Colors.grey,
+                      )
+                  ),
+                  Text("OR"),
+                  Expanded(
+                      child: Divider(
+                        height: 1,
+                        thickness: 1,
+                        indent: 10,
+                        endIndent: 10,
+                        color: Colors.grey,
+                      )
+                  ),
+                ]
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: CustomElevatedButton(text: 'Login with Google', onPressed: (){}),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: CustomElevatedButton(text: 'Login with Phone', onPressed: (){}),
+              ),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text("Don't have an account?"),
-                TextButton(onPressed: () {
+                TextButton(onPressed: isLoading
+                    ? () {CircularProgressIndicator();}
+                    : () {
                   Navigator.of(context).pushReplacementNamed('/signUp');
                 }, child: const Text('SignUp')),
               ],
