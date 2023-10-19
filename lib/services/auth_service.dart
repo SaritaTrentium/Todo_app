@@ -1,9 +1,28 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/screens/todo_list_screen.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
+  static signUpWithGoogle() async{
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+      try {
+        final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+        final GoogleSignInAuthentication googleAuth = await googleSignInAccount!.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        return await FirebaseAuth.instance.signInWithCredential(credential);
+      } catch (error) {
+        print(error.toString());
+        return null;
+      }
+  }
 
+  // Future<void> googleSignOut() async {
+  //   await googleSignIn.signOut();
+  //   await FirebaseAuth.instance.signOut();
+  // }
   static signUpUser(String name, String email, String password,
       BuildContext context) async {
     try {
@@ -21,7 +40,7 @@ class AuthServices {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration Successfully")));
         Navigator.of(context).pushReplacementNamed('/todoList');
-        return getUserId;
+       // return getUserId;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("User registration failed")),

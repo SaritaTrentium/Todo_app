@@ -37,9 +37,6 @@ class _TodoScreenState extends State<TodoScreen> {
         appBar: CustomAppBar(
           title: 'Add Todo',
           centerTitle: true,
-          actions: [
-            ChangeThemeButtonWidget(),
-          ],
         ),
         body: Form(
           key: _formKey,
@@ -69,7 +66,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     readOnly: true,
                     textInputAction: TextInputAction.done,
                     controller: TextEditingController(
-                             text: DateFormat('yyyy-MM-dd HH:mm').format(selectedDateTime)),
+                             text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
                     labelText: 'Select Date And Time',
                     onTap: () => _selectDateAndTime(context),
                   ),

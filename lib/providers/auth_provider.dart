@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/services/auth_service.dart';
@@ -13,8 +14,6 @@ class AuthProvider with ChangeNotifier{
   Future<void> signUpUser(String name, String email, String password, BuildContext context) async {
     try {
       await AuthServices.signUpUser(name, email, password, context);
-    // print('Get userID AuthProvider : $getUserId');
-       // _userId = getUserId;
         _isLoggedIn = true;
         notifyListeners();
     } catch (e) {
@@ -29,6 +28,16 @@ class AuthProvider with ChangeNotifier{
       notifyListeners();
     }catch(e){
       print(e);
+    }
+  }
+
+  Future<void> signUpWithGoogle()async {
+    try{
+      await AuthServices.signUpWithGoogle();
+      _isLoggedIn = true;
+      notifyListeners();
+    }catch(e){
+     print(e.toString());
     }
   }
 

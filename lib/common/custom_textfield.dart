@@ -10,6 +10,8 @@ class CustomTextField extends StatefulWidget{
   final Future<void> Function()? onTap;
   final String? Function(String?)? validator;
   final TextInputAction textInputAction;
+  final bool isPassword;
+  final AutovalidateMode? autovalidateMode;
   const CustomTextField({
     super.key,
     required this.labelText,
@@ -17,15 +19,14 @@ class CustomTextField extends StatefulWidget{
     this.obscureText,
     this.keyboardType,
     this.validator,
-  this.onChanged,this.onTap, this.readOnly, required this.textInputAction});
+  this.onChanged,this.onTap, this.readOnly, required this.textInputAction, this.isPassword= false,this.autovalidateMode});
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  bool passwordVisible = true;
-
+  bool passwordVisible = false;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -38,8 +39,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
             color: Theme.of(context).hintColor,
           ),
         ),
-        suffixIcon: widget.obscureText != null
-          ?  IconButton(
+        suffixIcon: widget.isPassword && widget.obscureText != null
+          ? IconButton(
               icon: Icon(passwordVisible
               ? Icons.visibility
               : Icons.visibility_off),
@@ -52,11 +53,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
         )
           : null,
       ),
-      obscureText: widget.obscureText ?? false,
+      obscureText: widget.isPassword ? !passwordVisible : false,
       validator: widget.validator,
       onChanged: widget.onChanged,
       onTap: widget.onTap,
       textInputAction: widget.textInputAction,
+      autovalidateMode: widget.autovalidateMode ?? AutovalidateMode.onUserInteraction,
     );
   }
 }

@@ -46,7 +46,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
   Widget build(BuildContext context) {
     _authProvider = Provider.of<AuthProvider>(context);
     _todoListProvider = Provider.of<TodoListProvider>(context);
-    TextEditingController searchController = TextEditingController();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -86,7 +85,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 10.0,right: 10.0),
               child: TextField(
-                controller: searchController, // Make sure to add this line
                 onChanged: (query) async {
                   filteredTodos = await _todoListProvider.fetchSearchTodos(query);
                 },
@@ -157,7 +155,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                           showDialog(context: context, builder: (BuildContext context){
                             return AlertDialog(
                               title: Text("Delete Confirmation"),
-                              content: Text("Are you sure you want to delete this item?"),
+                              content: Text("Are you sure you want to delete this ${filteredTodos[index].title} item?"),
                               actions: <Widget>[
                                 TextButton(onPressed: (){
                                   Navigator.of(context).pop();
@@ -168,7 +166,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                     setState(() {
                                       _todoListProvider.deleteTodo(index);
                                     });
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Delete Successfully"),),);
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Delete Successfully ${filteredTodos[index].title}"),),);
                                   } else{
                                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Delete not working properly"),),);
                                   }

@@ -15,10 +15,10 @@ class Validator{
   }
 
   static String? validateEmail(String value){
-    final emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
     if(value.isEmpty){
       return "Email can not be empty.";
     }
+    final emailRegex = RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$');
     if(!emailRegex.hasMatch(value)){
       return "Invalid email format";
     }

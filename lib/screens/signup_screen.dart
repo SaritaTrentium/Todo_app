@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_textfield.dart';
+import 'package:todo_app/common/resources/cudtom_divider.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
@@ -21,11 +22,6 @@ class SignUpScreenState extends State<SignUpScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController pwdController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +56,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                   controller: emailController,
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.emailAddress,
-                  validator:(value) => Validator.validateTitle(emailController.text),
+                  validator:(value) => Validator.validateEmail(emailController.text),
                 ),
               ),
               Padding(
@@ -70,50 +66,62 @@ class SignUpScreenState extends State<SignUpScreen> {
                   controller: pwdController,
                   textInputAction: TextInputAction.done,
                   validator: (value) => Validator.validatePassword(pwdController.text),
+                  isPassword: true,
                   obscureText: true,
                 ),
               ),
               const SizedBox(
                 height: 40,
               ),
-              CustomElevatedButton(onPressed: () async {
+                CustomElevatedButton(onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    String name = nameController.text.trim();
-                    String email = emailController.text.trim();
-                    String password = pwdController.text.trim();
-                    print('Sign Up With This Name :$name ,Email: $email and password: $password');
-                   _authProvider.signUpUser(name, email, password, context);
-                    final user = FirebaseAuth.instance.currentUser;
-                    try{
-                      if(user != null){
-                        saveLoginState(true);
-                        final todoBox = await Hive.openBox<Todo>('todos_${user.email}');
-                        await todoBox.clear();
-                      } else{
-                        print("Again SignUp Properly");
+                    setState(() {
+                      isLoading = true;
+                    });
+                      String name = nameController.text.trim();
+                      String email = emailController.text.trim();
+                      String password = pwdController.text.trim();
+                      print('Sign Up With This Name :$name ,Email: $email and password: $password');
+                     _authProvider.signUpUser(name, email, password, context);
+                      final user = FirebaseAuth.instance.currentUser;
+                      try{
+                        if(user != null){
+                          saveLoginState(true);
+                          final todoBox = await Hive.openBox<Todo>('todos_${user.email}');
+                          await todoBox.clear();
+                        } else{
+                          print("Again SignUp Properly");
+                        }
+                      }catch (error){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SignUp Process not working Properly.")));
+                            }finally {
+                        setState(() {
+                          isLoading = false; // Set loading back to false after the signup process is complete.
+                        });
                       }
-                    }catch (error){
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SignUp Process not working Properly.")));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Sign-up failed. Please try again."),
+                      ));
                     }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text("Sign-up failed. Please try again."),
-                    ));
-                  }
-              },text: 'Create an account'),
-              const SizedBox(
-                height: 10,
+                }, text: 'Create an account',
+                ),
+                const SizedBox(
+                height: 20,
               ),
+              CustomDivider(),
+              const SizedBox(
+                height: 30,
+              ),
+              CustomElevatedButton(text: 'Register with Google', onPressed: (){
+                _authProvider.signUpWithGoogle();
+              }),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('Already have an account?'),
                   TextButton(
-                      onPressed: isLoading
-                      ? () {
-                            CircularProgressIndicator();
-                          }
-                      : () {
+                      onPressed: () {
                             Navigator.of(context).pushReplacementNamed('/login');
                         }, child: const Text('Login')),
                 ],
