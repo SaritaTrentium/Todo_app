@@ -141,25 +141,25 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(
               height: 50,
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: CustomElevatedButton(text: 'Login with Google', onPressed: (){}),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: CustomElevatedButton(text: 'Login with Phone', onPressed: (){}),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: SizedBox(
+            //     width: double.infinity,
+            //     height: 50,
+            //     child: CustomElevatedButton(text: 'Login with Google', onPressed: (){}),
+            //   ),
+            // ),
+            // const SizedBox(
+            //   height: 10,
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: SizedBox(
+            //     width: double.infinity,
+            //     height: 50,
+            //     child: CustomElevatedButton(text: 'Login with Phone', onPressed: (){}),
+            //   ),
+            // ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
