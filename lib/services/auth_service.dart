@@ -7,16 +7,38 @@ class AuthServices {
     final GoogleSignIn googleSignIn = GoogleSignIn();
       try {
         final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-        final GoogleSignInAuthentication googleAuth = await googleSignInAccount!.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        return await FirebaseAuth.instance.signInWithCredential(credential);
+          final GoogleSignInAuthentication googleAuth = await googleSignInAccount!.authentication;
+          final AuthCredential credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
+          );
+          final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+          final User? user = authResult.user;
+          return user;
       } catch (error) {
-        print(error.toString());
-        return null;
-      }
+          print(error.toString());
+      return null;
+    }
+  }
+
+  static signUpWithPhoneNumber(String phoneNumber,BuildContext context)async {
+    try{
+      await FirebaseAuth.instance.verifyPhoneNumber(
+          phoneNumber: phoneNumber,
+          verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
+            await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
+          },
+          verificationFailed: (FirebaseAuthException e){
+            print('Verification failed: ${e.message}');
+          },
+          codeSent: (String verificationId, int? resendToken){
+
+          },
+          codeAutoRetrievalTimeout: (String verificationId){}
+      );
+    }on FirebaseAuthException catch(e){
+      SnackBar(content: Text(e.toString()));
+    }
   }
 
   // Future<void> googleSignOut() async {

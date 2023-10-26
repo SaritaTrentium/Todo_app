@@ -34,4 +34,14 @@ class Validator{
     }
     return null;
   }
+
+  static String? validateNumber(String number){
+    if(number.isEmpty){
+      return "Phone Number can not be empty";
+    }
+    final RegExp phoneRegExp = RegExp(r'^\d{10}$');
+    if(!phoneRegExp.hasMatch(number)){
+      return "Phone Number length should be 10";
+    }
+  }
 }

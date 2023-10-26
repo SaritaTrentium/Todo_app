@@ -31,7 +31,7 @@ class AuthProvider with ChangeNotifier{
     }
   }
 
-  Future<void> signUpWithGoogle()async {
+  Future<User?> signUpWithGoogle()async {
     try{
       await AuthServices.signUpWithGoogle();
       _isLoggedIn = true;
@@ -49,6 +49,16 @@ class AuthProvider with ChangeNotifier{
    }catch(e){
      print('Sign out failed: $e');
    }
+  }
+
+  Future<void> signUpWithPhoneNumber(String phoneNumber, BuildContext context) async{
+    try{
+      await AuthServices.signUpWithPhoneNumber(phoneNumber, context);
+      _isLoggedIn = true;
+      notifyListeners();
+    }catch(e){
+      print(e.toString());
+    }
   }
 
  Future<User?> checkUserExists(String email, String password) async {

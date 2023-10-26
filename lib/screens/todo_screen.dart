@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/common/custom_button.dart';
-import 'package:todo_app/common/custom_textfield.dart';
+import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
-import 'package:todo_app/widget/change_theme_widget.dart';
 
 class TodoScreen extends StatefulWidget {
   TodoScreen({super.key});
@@ -45,7 +44,7 @@ class _TodoScreenState extends State<TodoScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                     child: CustomTextField(
+                     child: CustomTextFormField(
                        controller: titleController,
                        labelText: 'Enter Title',
                        textInputAction: TextInputAction.next,
@@ -54,7 +53,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: CustomTextField(
+                  child: CustomTextFormField(
                     controller: descController,
                     labelText: 'Enter Description',
                     textInputAction: TextInputAction.next,
@@ -62,13 +61,20 @@ class _TodoScreenState extends State<TodoScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: CustomTextField(
-                    readOnly: true,
-                    textInputAction: TextInputAction.done,
-                    controller: TextEditingController(
-                             text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
-                    labelText: 'Select Date And Time',
-                    onTap: () => _selectDateAndTime(context),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextFormField(
+                          readOnly: true,
+                          textInputAction: TextInputAction.done,
+                          controller: TextEditingController(
+                                   text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
+                          labelText: 'Select Date And Time',
+                         // DropDown: DropDown(),
+                          onTap: () => _selectDateAndTime(context),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(

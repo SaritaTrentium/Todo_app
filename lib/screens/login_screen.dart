@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common/custom_button.dart';
-import 'package:todo_app/common/custom_textfield.dart';
+import 'package:todo_app/common/custom_outlinebutton.dart';
+import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/validator.dart';
 import '../common/resources/cudtom_divider.dart';
 import '../providers/auth_provider.dart';
@@ -25,6 +26,12 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     checkLoginStatus();
+  }
+
+  void dispose(){
+    super.dispose();
+    emailController.clear();
+    pwdController.clear();
   }
 
   Future<void> checkLoginStatus() async {
@@ -50,87 +57,101 @@ class _LoginScreenState extends State<LoginScreen> {
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Text("Welcome To Login",
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),),
+      backgroundColor: Colors.purple.shade50,
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Login",
+                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.deepPurple),),
                 ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-                child: CustomTextField(
-                  labelText: 'Enter your email',
-                  controller: emailController,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: TextInputType.emailAddress,
-                  validator:(value) => Validator.validateEmail(emailController.text),
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-                child: CustomTextField(
-                  labelText: 'Enter your password',
-                  controller: pwdController,
-                  textInputAction: TextInputAction.done,
-                  validator: (value) => Validator.validatePassword(pwdController.text),
-                  isPassword: true,
-                  obscureText: true,
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
+                  child: CustomTextFormField(
+                    labelText: 'Enter your email',
+                    controller: emailController,
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.emailAddress,
+                    validator:(value) => Validator.validateEmail(emailController.text),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: CustomElevatedButton(onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final email = emailController.text.trim();
-                      final password = pwdController.text.trim();
-                      try {
-                        final user = await _authProvider.checkUserExists(
-                            email, password);
-                        if (user != null) {
-                          await _authProvider.signInUser(email, password, context);
-                          saveLoginState(true);
-                          _authProvider.isUserSignedIn();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not exist need to SignUp")));
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
+                  child: CustomTextFormField(
+                    labelText: 'Enter your password',
+                    controller: pwdController,
+                    textInputAction: TextInputAction.done,
+                    validator: (value) => Validator.validatePassword(pwdController.text),
+                    isPassword: true,
+                    obscureText: true,
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: CustomElevatedButton(onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final email = emailController.text.trim();
+                        final password = pwdController.text.trim();
+                        try {
+                          final user = await _authProvider.checkUserExists(
+                              email, password);
+                          if (user != null) {
+                            await _authProvider.signInUser(email, password, context);
+                            saveLoginState(true);
+                            _authProvider.isUserSignedIn();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not exist need to SignUp")));
+                          }
+                        } catch (error) {
+                          print("User not Logged In First SignUp.");
                         }
-                      } catch (error) {
-                        print("User not Logged In First SignUp.");
                       }
-                    }
-                  }, text: 'Login'),
+                    }, text: 'Login'),
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              CustomDivider(),
-              const SizedBox(
-                height: 50,
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Don't have an account?"),
-                  TextButton(onPressed: (
-
-                      ) {
-                    Navigator.of(context).pushReplacementNamed('/signUp');
-                  }, child: const Text('SignUp')),
-                ],
-              ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+                CustomDivider(),
+                const SizedBox(height: 20,),
+                CustomOutlineButton(
+                  onPressed: () =>_authProvider.signUpWithGoogle(),
+                  text: 'Register with Google', color: Colors.white, textColor: Colors.deepPurple,),
+                CustomOutlineButton(
+                    text: 'Register with PhoneNumber', color: Colors.white, textColor: Colors.deepPurple,
+                    onPressed: (){
+                      Navigator.of(context).pushReplacementNamed('/otp');
+                    }),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text("Don't have an account?"),
+                    TextButton(onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('/signUp');
+                    }, child: const Text('SignUp',style: TextStyle(color: Colors.deepPurple),)),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

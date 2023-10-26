@@ -16,7 +16,7 @@ class CustomElevatedButton extends StatelessWidget{
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(
           Theme.of(context).brightness == Brightness.light
-              ? Colors.blue
+              ? Colors.deepPurpleAccent.shade200
               : Colors.tealAccent.shade700,
         ),
       ),

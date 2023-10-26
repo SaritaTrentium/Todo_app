@@ -4,7 +4,7 @@ class CustomTheme{
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
     brightness: Brightness.dark,
-    primaryColorDark: Colors.tealAccent,
+    primaryColor: Colors.tealAccent,
     colorScheme: ColorScheme.dark(
       background: Colors.black,
       primary: Colors.grey[900]!,
@@ -16,12 +16,13 @@ class CustomTheme{
 
   static final ThemeData lightTheme = ThemeData.light().copyWith(
   brightness: Brightness.light,
-  primaryColorLight: Colors.blue,
+  primaryColor: Colors.deepPurpleAccent,
   colorScheme: ColorScheme.light(
     background: Colors.white,
     primary: Colors.teal,
     secondary: Colors.white,
-    onBackground: Colors.blue,
+    onBackground: Colors.deepPurpleAccent,
   ),
+    scaffoldBackgroundColor: Colors.purple.shade50,
 );
 }

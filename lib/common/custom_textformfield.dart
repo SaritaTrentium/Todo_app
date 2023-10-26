@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatefulWidget{
+class CustomTextFormField extends StatefulWidget{
   final String labelText;
   final TextEditingController? controller;
   final bool? obscureText;
@@ -12,20 +12,22 @@ class CustomTextField extends StatefulWidget{
   final TextInputAction textInputAction;
   final bool isPassword;
   final AutovalidateMode? autovalidateMode;
-  const CustomTextField({
+  final Container? prefixIcon;
+  final Widget? DropDown;
+  const CustomTextFormField({
     super.key,
     required this.labelText,
     this.controller,
     this.obscureText,
     this.keyboardType,
     this.validator,
-  this.onChanged,this.onTap, this.readOnly, required this.textInputAction, this.isPassword= false,this.autovalidateMode});
+  this.onChanged,this.onTap, this.readOnly, required this.textInputAction, this.isPassword= false,this.autovalidateMode, this.prefixIcon, this.DropDown});
 
   @override
-  State<CustomTextField> createState() => _CustomTextFieldState();
+  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
 }
 
-class _CustomTextFieldState extends State<CustomTextField> {
+class _CustomTextFormFieldState extends State<CustomTextFormField> {
   bool passwordVisible = false;
   @override
   Widget build(BuildContext context) {
