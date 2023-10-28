@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/firebase_options.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/models/user_model.dart';
 import 'package:todo_app/providers/auth_provider.dart';
@@ -27,7 +27,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 Future<void> main() async {
   var logger = Logger();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  logger.d("Starting Firebase initialization");
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  logger.d("Firebase initialization completed");
   await SharedPreferences.getInstance();
 
   NotificationService().initialize();
@@ -68,18 +72,19 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeProvider.themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasData) {
-              return TodoListScreen();
-            } else {
-              return UpTodo();
-            }
-        }
-      ),
+      home: UpTodo(),
+      // home: StreamBuilder(
+      //     stream: FirebaseAuth.instance.authStateChanges(),
+      //     builder: (context, snapshot) {
+      //       if (snapshot.connectionState == ConnectionState.waiting) {
+      //         return CircularProgressIndicator();
+      //       } else if (snapshot.hasData) {
+      //         return TodoListScreen();
+      //       } else {
+      //         return UpTodo();
+      //       }
+      //   }
+      // ),
       routes: {
         '/todoFirst': (context) => UpTodo(),
         '/slider': (context) => SliderScreen(),

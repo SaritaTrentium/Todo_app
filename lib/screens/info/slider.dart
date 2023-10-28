@@ -15,7 +15,7 @@ class _SliderScreenState extends State<SliderScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _currentPage,viewportFraction: 0.8);
+    _pageController = PageController(initialPage: _currentPage,viewportFraction: 1.0);
   }
 
   @override
@@ -28,38 +28,71 @@ class _SliderScreenState extends State<SliderScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(top: 60.0, left: 20.0, right: 20.0),
           child: Container(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                     AspectRatio(
-                      aspectRatio: 0.85,
+                      aspectRatio: 0.70,
                       child: PageView.builder(
                         itemCount: sliderList.length,
                         physics: const ClampingScrollPhysics(),
                         controller: _pageController,
+                        onPageChanged: (int index){
+                          setState(() {
+                            _currentPage = index;
+                          });
+                        },
                         itemBuilder: (context, index){
                           return carouselView(index);
                         },
                       ),
                     ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: sliderList.asMap().entries.map((entry) {
+                    return GestureDetector(
+                      onTap: () {
+                        _pageController.animateToPage(entry.key, duration: Duration(milliseconds: 500), curve: Curves.ease);
+                      },
+                      child: Container(
+                        width: 10.0,
+                        height: 10.0,
+                        margin: EdgeInsets.symmetric(horizontal: 4.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentPage == entry.key ? Colors.deepPurple : Colors.blueGrey.shade200,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
                 ],
             ),
           ),
         ),
       ),
-      // bottomNavigationBar: Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: [
-      //       TextButton(onPressed: (){
-      //         Navigator.of(context).pushNamed('/welcome');
-      //       }, child: Text('SKIP'),),
-      //       TextButton(onPressed: (){
-      //         Navigator.of(context).pushNamed('/welcome');
-      //       }, child: Text('Get Started'),),
-      //     ],
-      // ),
+      bottomNavigationBar: _currentPage < sliderList.length -1
+      ? Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(onPressed: (){
+              Navigator.of(context).pushNamed('/welcome');
+            }, child: Text('SKIP'),),
+            TextButton(onPressed: (){
+              _pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease);
+            }, child: Text('Next'),),
+          ],
+      )
+    : Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(onPressed: (){
+            Navigator.of(context).pushNamed('/welcome');
+          }, child: Text('Get Started'),),
+        ],
+      ),
     );
   }
 
@@ -68,14 +101,6 @@ class _SliderScreenState extends State<SliderScreen> {
      animation: _pageController,
      builder: (context, child){
        return carouselCard(sliderList[index]);
-      //  double value = 0.0;
-      // if(_pageController.position.haveDimensions){
-      //   value = index.toDouble() - (_pageController.page ?? 0);
-      //   value = (value * 0.038).clamp(-1, 1);
-      // }
-      // return Transform.rotate(
-      //   angle: pi * value,
-      //   child: carouselCard(sliderList[index]),);
      },
     );
 
@@ -109,10 +134,12 @@ class _SliderScreenState extends State<SliderScreen> {
           padding: const EdgeInsets.only(top: 20.0),
           child: Text(data.title,  style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),),
         ),
+        const SizedBox(height: 30,),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(data.subTitle,  style: TextStyle(color: Colors.blueGrey, fontSize: 16, fontWeight: FontWeight.bold),),
+          child: Text(data.subTitle,  style: TextStyle(color: Colors.blueGrey.shade400, fontSize: 16, fontWeight: FontWeight.bold),),
         ),
+        const SizedBox(height: 30,),
       ],
     );
   }

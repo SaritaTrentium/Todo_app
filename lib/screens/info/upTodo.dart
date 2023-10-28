@@ -22,6 +22,7 @@ class _UpTodoState extends State<UpTodo> {
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset('assets/info/todo.png',height: 400,width: 400,),
             Text('Todo App',style: TextStyle(color: Colors.purple.shade400,fontSize:40,fontWeight: FontWeight.bold),),
