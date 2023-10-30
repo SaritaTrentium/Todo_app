@@ -97,7 +97,7 @@ class AuthServices {
 
       final user = FirebaseAuth.instance.currentUser;
       if(user != null){
-        Navigator.of(context).pushReplacementNamed('/todoList');
+        Navigator.of(context).pushReplacementNamed('/home');
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("You are not LogIn.")));

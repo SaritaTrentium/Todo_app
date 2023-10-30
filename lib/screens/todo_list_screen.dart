@@ -35,7 +35,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
       _todoListProvider.fetchUserTodos(user.email).then((todos) {
           filteredTodos = todos;
       });
-     // logger.d("Check user and Show their todos");
     } else{
       setState(() {
         print("User is null. Try to sign in");
@@ -48,10 +47,15 @@ class _TodoListScreenState extends State<TodoListScreen> {
     _todoListProvider = Provider.of<TodoListProvider>(context);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black26
+            : Colors.deepPurple.shade400,
         onPressed: () {
           Navigator.of(context).pushNamed('/todo');
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add,
+          color: Colors.white,
+        ),
       ),
       appBar: CustomAppBar(
         title: 'Todo Info',
@@ -112,6 +116,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               },
             ),
             ),
+            //const CustomElevatedButton(text: 'HomeScreen', onPressed: (){}),
           ],
         ),
       ),

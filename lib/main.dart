@@ -9,12 +9,16 @@ import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
+import 'package:todo_app/screens/home/task_complete.dart';
+import 'package:todo_app/screens/home/user_panel.dart';
+import 'package:todo_app/screens/home_screen.dart';
 import 'package:todo_app/screens/info/slider.dart';
 import 'package:todo_app/screens/info/upTodo.dart';
 import 'package:todo_app/screens/info/welcome.dart';
 import 'package:todo_app/screens/login_screen.dart';
 import 'package:todo_app/screens/otp_screen.dart';
 import 'package:todo_app/screens/registerWithPhone.dart';
+import 'package:todo_app/screens/search_screen.dart';
 import 'package:todo_app/screens/signup_screen.dart';
 import 'package:todo_app/screens/todo_list_screen.dart';
 import 'package:todo_app/screens/todo_screen.dart';
@@ -72,29 +76,21 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeProvider.themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: UpTodo(),
-      // home: StreamBuilder(
-      //     stream: FirebaseAuth.instance.authStateChanges(),
-      //     builder: (context, snapshot) {
-      //       if (snapshot.connectionState == ConnectionState.waiting) {
-      //         return CircularProgressIndicator();
-      //       } else if (snapshot.hasData) {
-      //         return TodoListScreen();
-      //       } else {
-      //         return UpTodo();
-      //       }
-      //   }
-      // ),
+      home: HomeScreen(),
       routes: {
         '/todoFirst': (context) => UpTodo(),
         '/slider': (context) => SliderScreen(),
         '/welcome': (context) => Welcome(),
         '/login': (context) => LoginScreen(),
         '/signUp': (context) => SignUpScreen(),
+        '/home': (context) => HomeScreen(),
+        '/taskComplete': (context) => TaskComplete(),
+        '/userpanel': (context) => UserPanel(),
         '/todoList': (context) => TodoListScreen(),
         '/todo': (context) => TodoScreen(),
         '/registerWithPhone': (context) => RegisterWithPhone(),
-        'otp': (context) => OtpScreen(),
+        '/otp': (context) => OtpScreen(),
+        '/search': (context) => SearchScreen(),
       },
     );
   }

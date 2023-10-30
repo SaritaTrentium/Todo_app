@@ -33,41 +33,37 @@ class SignUpScreenState extends State<SignUpScreen> {
       return LoginScreen();
       }
     return Scaffold(
-      backgroundColor: Colors.purple.shade50,
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Form(
             key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text('SignUp',
-                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,color: Colors.deepPurple),),
-                Padding(
-                  padding: const EdgeInsets.only(top: 32, left: 32, right: 32),
-                  child: CustomTextFormField(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text('SignUp',
+                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,color: Colors.deepPurple),),
+                  const SizedBox(height: 30),
+                  CustomTextFormField(
                     labelText: 'Enter your Name',
                     controller: nameController,
                     textInputAction: TextInputAction.next,
                     validator:(value) => Validator.validateTitle(nameController.text),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-                  child: CustomTextFormField(
+                  const SizedBox(height: 20),
+                  CustomTextFormField(
                     labelText: 'Enter your email',
                     controller: emailController,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
                     validator:(value) => Validator.validateEmail(emailController.text),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-                  child: CustomTextFormField(
+                  const SizedBox(height: 20),
+                  CustomTextFormField(
                     labelText: 'Enter your password',
                     controller: pwdController,
                     textInputAction: TextInputAction.done,
@@ -75,13 +71,10 @@ class SignUpScreenState extends State<SignUpScreen> {
                     isPassword: true,
                     obscureText: true,
                   ),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 32.0, right: 32.0),
-                    child: SizedBox(
+                  const SizedBox(
+                    height: 40,
+                  ),
+                    SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: CustomElevatedButton(onPressed: () async {
@@ -118,31 +111,30 @@ class SignUpScreenState extends State<SignUpScreen> {
                       }, text: 'Create an account',
                       ),
                     ),
+                    const SizedBox(height: 30),
+                  CustomDivider(),
+                  const SizedBox(height: 30,),
+                  CustomOutlineButton(
+                      onPressed: () =>_authProvider.signUpWithGoogle(),
+                       text: 'Register with Google', color: Colors.white, textColor: Colors.deepPurple,),
+                  const SizedBox(height: 20,),
+                  CustomOutlineButton(
+                      text: 'Register with PhoneNumber', color: Colors.white, textColor: Colors.deepPurple,
+                      onPressed: (){
+                        Navigator.of(context).pushReplacementNamed('/otp');
+                  }),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Already have an account?'),
+                      TextButton(
+                          onPressed: () {
+                                Navigator.of(context).pushReplacementNamed('/login');
+                            }, child: const Text('Login',style: TextStyle(color: Colors.deepPurple),)),
+                    ],
                   ),
-                  const SizedBox(
-                  height: 20,
-                ),
-                CustomDivider(),
-                const SizedBox(height: 20,),
-                CustomOutlineButton(
-                    onPressed: () =>_authProvider.signUpWithGoogle(),
-                     text: 'Register with Google', color: Colors.white, textColor: Colors.deepPurple,),
-                CustomOutlineButton(
-                    text: 'Register with PhoneNumber', color: Colors.white, textColor: Colors.deepPurple,
-                    onPressed: (){
-                      Navigator.of(context).pushReplacementNamed('/otp');
-                }),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Already have an account?'),
-                    TextButton(
-                        onPressed: () {
-                              Navigator.of(context).pushReplacementNamed('/login');
-                          }, child: const Text('Login',style: TextStyle(color: Colors.deepPurple),)),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
