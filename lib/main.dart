@@ -6,7 +6,6 @@ import 'package:todo_app/firebase_options.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/models/user_model.dart';
 import 'package:todo_app/providers/auth_provider.dart';
-import 'package:todo_app/providers/google_sign_in_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
@@ -38,6 +37,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   logger.d("Firebase initialization completed");
+  NotificationService().initNotification();
+  tz.initializeTimeZones();
   await SharedPreferences.getInstance();
 
   NotificationService().initialize();
@@ -57,7 +58,6 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => UserModelProvider()),
         ChangeNotifierProvider(create: (context) => TodoListProvider()),
         ChangeNotifierProvider(create: (context) => TodoProvider()),
-        ChangeNotifierProvider(create: (context) => GoogleSignInProvider()),
       ],
       child: const MyApp()));
 }

@@ -8,7 +8,6 @@ import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/resources/cudtom_divider.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/providers/auth_provider.dart';
-import 'package:todo_app/providers/google_sign_in_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
 import '../models/todo_model.dart';
 import 'login_screen.dart';
@@ -28,8 +27,6 @@ class SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = false;
-    late GoogleSignInProvider _googleSignInProvider;
-    _googleSignInProvider = Provider.of<GoogleSignInProvider>(context);
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
     if (_authProvider.isLoggedIn) {
@@ -118,7 +115,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                   CustomDivider(),
                   const SizedBox(height: 30,),
                   CustomOutlineButton(
-                      onPressed: () =>_googleSignInProvider.googleLogin(),
+                      onPressed: () =>_authProvider.signUpWithGoogle(context),
                        text: 'Google',
                        color: Colors.white,
                        textColor: Colors.deepPurple,

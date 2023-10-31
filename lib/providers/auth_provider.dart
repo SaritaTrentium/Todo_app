@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -37,16 +36,16 @@ class AuthProvider with ChangeNotifier{
     }
   }
 
-  // Future<User?> signUpWithGoogle()async {
-  //   try{
-  //     await AuthServices.signUpWithGoogle();
-  //     _isLoggedIn = true;
-  //     _user = googleUser;
-  //     notifyListeners();
-  //   }catch(e){
-  //    print(e.toString());
-  //   }
-  // }
+  Future<User?> signUpWithGoogle(BuildContext context)async {
+    try{
+      await AuthServices.signUpWithGoogle(context);
+      _isLoggedIn = true;
+      _user = googleUser;
+      notifyListeners();
+    }catch(e){
+     print(e.toString());
+    }
+  }
 
   Future<void> signOut()async {
    try{

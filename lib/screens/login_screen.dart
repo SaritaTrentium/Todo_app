@@ -5,7 +5,6 @@ import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_outlinebutton.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/validator.dart';
-import 'package:todo_app/providers/google_sign_in_provider.dart';
 import '../common/resources/cudtom_divider.dart';
 import '../providers/auth_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
@@ -55,8 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    late GoogleSignInProvider _googleSignInProvider;
-    _googleSignInProvider = Provider.of<GoogleSignInProvider>(context);
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
@@ -127,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   CustomDivider(),
                   const SizedBox(height: 20,),
                   CustomOutlineButton(
-                    onPressed: () =>_googleSignInProvider.googleLogin(),
+                    onPressed: () =>_authProvider.signUpWithGoogle(context),
                     text: 'Google', color: Colors.white, textColor: Colors.deepPurple,fontSize: 25,),
                   const SizedBox(
                     height: 20,

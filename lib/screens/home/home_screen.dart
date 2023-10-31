@@ -14,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool dataFetched = false;
   bool isGridView = false;
   int _currentIndex = 0;
   var logger;
@@ -23,18 +24,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    checkUsersTodo();
+    if (!dataFetched) {
+      checkUsersTodo();
+    }
     isGridView = false;
   }
   Future<void> checkUsersTodo() async {
     _todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
     final user = await FirebaseAuth.instance.currentUser;
     if(user != null){
+      dataFetched = true;
       query = '';
       Hive.openBox<Todo>('todos_${user.email}');
       filteredTodos = <Todo>[];
       _todoListProvider.fetchUserTodos(user.email).then((todos) {
-        filteredTodos = todos;
+        setState(() {
+          filteredTodos = todos;
+        });
       });
     } else{
       setState(() {
@@ -53,7 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           AnimatedContainer(
             duration: Duration(milliseconds: 300),
-           // width: isSearching ? double.infinity : 30,
             child: IconButton(onPressed: () {
               setState(() {
                 isSearching = !isSearching;
@@ -72,15 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ];
           },
           onSelected: (value){
-            if(value ==0){
-              setState(() {
-                isGridView = true;
-              });
-            }else{
-              setState(() {
-                isGridView = false;
-              });
-            }
+            switchView();
           },
           ),
         ],
@@ -106,13 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                   else {
-                    if(isGridView){
-                      return buildGridView(filteredTodos);
-                    }
-                    else{
-                      return buildListView(filteredTodos);
-                    }
-                  }
+                    return isGridView ? buildGridView(filteredTodos) : buildListView(filteredTodos);
+                }
                 },
               ),
             ),
@@ -221,6 +213,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return buildTodoItem(filteredTodos[index]); // Pass the individual todo item
       },
     );
+  }
+  void switchView() {
+    setState(() {
+      isGridView = !isGridView; // Toggle between GridView and ListView
+    });
   }
 }
 
