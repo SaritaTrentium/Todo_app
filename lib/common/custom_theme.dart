@@ -4,12 +4,12 @@ class CustomTheme{
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
     brightness: Brightness.dark,
-    primaryColor: Colors.tealAccent,
+    primaryColor: Colors.black12,
     colorScheme: ColorScheme.dark(
       background: Colors.black,
       primary: Colors.grey[900]!,
       secondary: Colors.grey[80]!,
-      onBackground: Colors.tealAccent,
+      onBackground: Colors.black12,
     ),
     scaffoldBackgroundColor: Colors.black,
   );

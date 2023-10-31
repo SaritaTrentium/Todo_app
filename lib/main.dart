@@ -6,22 +6,24 @@ import 'package:todo_app/firebase_options.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/models/user_model.dart';
 import 'package:todo_app/providers/auth_provider.dart';
+import 'package:todo_app/providers/google_sign_in_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/screens/home/task_complete.dart';
 import 'package:todo_app/screens/home/user_panel.dart';
-import 'package:todo_app/screens/home_screen.dart';
+import 'package:todo_app/screens/home/home_screen.dart';
 import 'package:todo_app/screens/info/slider.dart';
 import 'package:todo_app/screens/info/upTodo.dart';
 import 'package:todo_app/screens/info/welcome.dart';
 import 'package:todo_app/screens/login_screen.dart';
 import 'package:todo_app/screens/otp_screen.dart';
 import 'package:todo_app/screens/registerWithPhone.dart';
-import 'package:todo_app/screens/search_screen.dart';
+import 'package:todo_app/screens/home/search_screen.dart';
+import 'package:todo_app/screens/setting_screen.dart';
 import 'package:todo_app/screens/signup_screen.dart';
 import 'package:todo_app/screens/todo_list_screen.dart';
-import 'package:todo_app/screens/todo_screen.dart';
+import 'package:todo_app/screens/home/add_todo_screen.dart';
 import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:firebase_core/firebase_core.dart';
@@ -55,6 +57,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => UserModelProvider()),
         ChangeNotifierProvider(create: (context) => TodoListProvider()),
         ChangeNotifierProvider(create: (context) => TodoProvider()),
+        ChangeNotifierProvider(create: (context) => GoogleSignInProvider()),
       ],
       child: const MyApp()));
 }
@@ -76,7 +79,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: _themeProvider.themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      home: HomeScreen(),
+      home: UpTodo(),
       routes: {
         '/todoFirst': (context) => UpTodo(),
         '/slider': (context) => SliderScreen(),
@@ -85,12 +88,13 @@ class _MyAppState extends State<MyApp> {
         '/signUp': (context) => SignUpScreen(),
         '/home': (context) => HomeScreen(),
         '/taskComplete': (context) => TaskComplete(),
-        '/userpanel': (context) => UserPanel(),
+        '/userPanel': (context) => UserPanel(),
         '/todoList': (context) => TodoListScreen(),
-        '/todo': (context) => TodoScreen(),
+        '/addTodo': (context) => TodoScreen(),
         '/registerWithPhone': (context) => RegisterWithPhone(),
         '/otp': (context) => OtpScreen(),
         '/search': (context) => SearchScreen(),
+        '/setting': (context) => SettingScreen(),
       },
     );
   }

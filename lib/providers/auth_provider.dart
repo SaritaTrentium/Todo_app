@@ -1,6 +1,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:todo_app/services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier{
@@ -10,6 +11,11 @@ class AuthProvider with ChangeNotifier{
 
   String? _userId;
   String? get userId => _userId;
+
+  GoogleSignInAccount? _user;
+  GoogleSignInAccount get user => _user!;
+
+  GoogleSignInAccount? get googleUser => null;
 
   Future<void> signUpUser(String name, String email, String password, BuildContext context) async {
     try {
@@ -31,15 +37,16 @@ class AuthProvider with ChangeNotifier{
     }
   }
 
-  Future<User?> signUpWithGoogle()async {
-    try{
-      await AuthServices.signUpWithGoogle();
-      _isLoggedIn = true;
-      notifyListeners();
-    }catch(e){
-     print(e.toString());
-    }
-  }
+  // Future<User?> signUpWithGoogle()async {
+  //   try{
+  //     await AuthServices.signUpWithGoogle();
+  //     _isLoggedIn = true;
+  //     _user = googleUser;
+  //     notifyListeners();
+  //   }catch(e){
+  //    print(e.toString());
+  //   }
+  // }
 
   Future<void> signOut()async {
    try{

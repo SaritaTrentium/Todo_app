@@ -8,6 +8,7 @@ import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/resources/cudtom_divider.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/providers/auth_provider.dart';
+import 'package:todo_app/providers/google_sign_in_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
 import '../models/todo_model.dart';
 import 'login_screen.dart';
@@ -27,6 +28,8 @@ class SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     bool isLoading = false;
+    late GoogleSignInProvider _googleSignInProvider;
+    _googleSignInProvider = Provider.of<GoogleSignInProvider>(context);
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
     if (_authProvider.isLoggedIn) {
@@ -115,11 +118,15 @@ class SignUpScreenState extends State<SignUpScreen> {
                   CustomDivider(),
                   const SizedBox(height: 30,),
                   CustomOutlineButton(
-                      onPressed: () =>_authProvider.signUpWithGoogle(),
-                       text: 'Register with Google', color: Colors.white, textColor: Colors.deepPurple,),
+                      onPressed: () =>_googleSignInProvider.googleLogin(),
+                       text: 'Google',
+                       color: Colors.white,
+                       textColor: Colors.deepPurple,
+                       fontSize: 25,
+                       image: Image.asset('assets/info/google.png',height: 50,width: 50,),),
                   const SizedBox(height: 20,),
                   CustomOutlineButton(
-                      text: 'Register with PhoneNumber', color: Colors.white, textColor: Colors.deepPurple,
+                      text: 'PhoneNumber', color: Colors.white, textColor: Colors.deepPurple, fontSize: 25,image: Image.asset('/assets/info/phone.png',height: 20,width: 20,),
                       onPressed: (){
                         Navigator.of(context).pushReplacementNamed('/otp');
                   }),

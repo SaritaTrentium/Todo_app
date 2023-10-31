@@ -15,6 +15,7 @@ class TodoListScreen extends StatefulWidget {
   State<TodoListScreen> createState() => _TodoListScreenState();
 }
 class _TodoListScreenState extends State<TodoListScreen> {
+  @override
   var logger;
   late AuthProvider _authProvider;
   late TodoListProvider _todoListProvider;
@@ -51,7 +52,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
             ? Colors.black26
             : Colors.deepPurple.shade400,
         onPressed: () {
-          Navigator.of(context).pushNamed('/todo');
+          Navigator.of(context).pushNamed('/addTodo');
         },
         child: const Icon(Icons.add,
           color: Colors.white,
@@ -116,7 +117,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
               },
             ),
             ),
-            //const CustomElevatedButton(text: 'HomeScreen', onPressed: (){}),
           ],
         ),
       ),
@@ -169,7 +169,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                   final user = FirebaseAuth.instance.currentUser;
                                   if(user != null){
                                     setState(() {
-                                      _todoListProvider.deleteTodo(index);
+                                     // _todoListProvider.deleteTodo(todo);
                                     });
                                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Delete Successfully ${filteredTodos[index].title}"),),);
                                   } else{

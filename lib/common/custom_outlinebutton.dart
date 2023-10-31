@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-class CustomOutlineButton extends StatelessWidget {
+class CustomOutlineButton extends StatefulWidget {
   final String text;
   final Color color;
   final Color textColor;
+  final int fontSize;
   final Function onPressed;
-  const CustomOutlineButton({super.key, required this.onPressed, required this.text, required this.color, required this.textColor});
+  final Image? image;
+  const CustomOutlineButton({super.key, required this.onPressed, required this.text, required this.color, required this.textColor, required this.fontSize,this.image});
 
+  @override
+  State<CustomOutlineButton> createState() => _CustomOutlineButtonState();
+}
+
+class _CustomOutlineButtonState extends State<CustomOutlineButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Center(
         child: OutlinedButton(
-          child: Text(text,style: TextStyle(color: textColor),),
+          child: Text(widget.text,style: TextStyle(color: widget.textColor),),
           onPressed:  () {
-            onPressed();
+            widget.onPressed();
           },
           style: OutlinedButton.styleFrom(
             textStyle: TextStyle(

@@ -27,10 +27,10 @@ class TodoListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteTodo(int index) async {
-    final todoId = _todos[index].userId;
+  Future<void> deleteTodo(Todo todo) async {
+    final todoId = todo.userId;
     await _todoService.deleteTodo(todoId);
-    _todos.removeAt(index);
+    _todos.remove(todo);
     notifyListeners();
   }
 

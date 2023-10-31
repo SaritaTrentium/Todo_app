@@ -4,7 +4,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   final bool? centerTitle;
   final IconButton? iconButton;
-  const CustomAppBar({super.key, required this.title,this.actions, this.centerTitle, this.iconButton});
+  final bool? automaticallyImplyLeading;
+  const CustomAppBar({super.key, required this.title,this.actions, this.centerTitle, this.iconButton, this.automaticallyImplyLeading});
 
   @override
   Size get  preferredSize => Size.fromHeight(kToolbarHeight);

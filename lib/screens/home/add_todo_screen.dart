@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
@@ -24,6 +25,8 @@ class _TodoScreenState extends State<TodoScreen> {
   TextEditingController descController = TextEditingController();
   NotificationService notificationService = NotificationService();
   DateTime selectedDateTime = DateTime.now();
+
+  var _currentIndex=1;
 
   @override
   void dispose() {
@@ -70,7 +73,6 @@ class _TodoScreenState extends State<TodoScreen> {
                           controller: TextEditingController(
                                    text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
                           labelText: 'Select Date And Time',
-                         // DropDown: DropDown(),
                           onTap: () => _selectDateAndTime(context),
                         ),
                       ),
@@ -87,6 +89,15 @@ class _TodoScreenState extends State<TodoScreen> {
               ],
             ),
           ),
+        ),
+        bottomNavigationBar: CustomBottomNavigation(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            // Handle navigation based on the selected index
+            setState(() {
+              _currentIndex = index;
+            });
+          },
         ),
       );
     }
@@ -178,7 +189,7 @@ class _TodoScreenState extends State<TodoScreen> {
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Added Successfully"),),);
-            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("User Not Exist")));

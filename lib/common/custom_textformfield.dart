@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextFormField extends StatefulWidget{
   final String labelText;
@@ -33,6 +34,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
+      autofillHints: [AutofillHints.email],
       decoration: InputDecoration(
         labelText: widget.labelText,
         border: OutlineInputBorder(

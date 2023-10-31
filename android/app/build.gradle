@@ -18,7 +18,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply from: "/Users/sarita/Developer/flutter/packages/flutter_tools/gradle/flutter.gradle"
+apply from: '/Users/sarita/Developer/flutter/packages/flutter_tools/gradle/flutter.gradle'
 apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -66,7 +66,7 @@ flutter {
 
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.google.android.gms:play-services-auth:19.2.0'
-    implementation 'com.google.firebase:firebase-bom:32.4.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.firebase:firebase-bom:32.4.1'
+    implementation 'com.google.firebase:firebase-analytics'
 }

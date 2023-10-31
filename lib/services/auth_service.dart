@@ -1,25 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:todo_app/models/user_model.dart';
 
 class AuthServices {
-  static signUpWithGoogle() async{
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-      try {
-        final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-          final GoogleSignInAuthentication googleAuth = await googleSignInAccount!.authentication;
-          final AuthCredential credential = GoogleAuthProvider.credential(
-            accessToken: googleAuth.accessToken,
-            idToken: googleAuth.idToken,
-          );
-          final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
-          final User? user = authResult.user;
-          return user;
-      } catch (error) {
-          print(error.toString());
-      return null;
-    }
-  }
+  // static signUpWithGoogle() async{
+  //   final googleSignIn = GoogleSignIn();
+  //   Future googleLogin() async{
+  //     final googleUser = await googleSignIn.signIn();
+  //     if(googleUser == null) return;
+  //    // _user = googleUser;
+  //
+  //     final googleAuth = await googleUser.authentication;
+  //
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+  //
+  //     await FirebaseAuth.instance.signInWithCredential(credential);
+  //   }
+  // }
 
   static signUpWithPhoneNumber(String phoneNumber,BuildContext context)async {
     try{
@@ -55,13 +56,13 @@ class AuthServices {
       if (firebaseUser != null) {
         final String getUserId = firebaseUser.uid;
         print('User Id during SignUp: $getUserId');
-       // Users(userId: getUserId, email: email, password: password);
+        Users(userId: getUserId, email: email, password: password);
 
         await FirebaseAuth.instance.currentUser!.updateDisplayName(name);
         await FirebaseAuth.instance.currentUser!.updateEmail(email);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration Successfully")));
-        Navigator.of(context).pushReplacementNamed('/todoList');
+        Navigator.of(context).pushReplacementNamed('/home');
        // return getUserId;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
