@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
@@ -10,6 +11,7 @@ import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/services/notification_service.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 class TodoScreen extends StatefulWidget {
   TodoScreen({super.key});
@@ -28,6 +30,12 @@ class _TodoScreenState extends State<TodoScreen> {
 
   var _currentIndex=1;
 
+  @override
+  void initState() {
+    super.initState();
+    NotificationService.initializeNotification();
+    tz.initializeTimeZones();
+  }
   @override
   void dispose() {
     super.dispose();
@@ -60,6 +68,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     controller: descController,
                     labelText: 'Enter Description',
                     textInputAction: TextInputAction.next,
+                    validator:(value) => Validator.validateDesc(descController.text),
                   ),
                 ),
                 Padding(
@@ -135,19 +144,22 @@ class _TodoScreenState extends State<TodoScreen> {
     required String title,
     required DateTime scheduleNotificationTime,
   }) {
-
-    notificationService.scheduleNotification(
+    print('Scheduling notification for $title at $scheduleNotificationTime');
+    print('function called');
+    NotificationService.scheduleNotification(
       id: id,
       title: title,
       desc: 'Don\'t forget to complete your todo: $title',
       payload: 'Time Left ${scheduleNotificationTime.difference(DateTime.now()).inMinutes} minutes',
       scheduleNotificationTime: scheduleNotificationTime,
     );
+    print('function executed');
   }
   void addTodo() async {
     if (_formKey.currentState!.validate()) {
       final title = titleController.text;
       final desc = descController.text;
+      print('Adding todo: Title: $title, Description: $desc');
       try {
         User? user = FirebaseAuth.instance.currentUser;
         if (user != null) {
@@ -159,21 +171,31 @@ class _TodoScreenState extends State<TodoScreen> {
           DateTime tenMinuteAgo = selectedDateTime.subtract(
               const Duration(minutes: 10));
 
-          scheduleNotification(
-            id: 0,
-            title: title,
-            scheduleNotificationTime: tenMinuteAgo,
-          );
-          scheduleNotification(
-            id: 1,
-            title: title,
-            scheduleNotificationTime: oneHourAgo,
-          );
-          scheduleNotification(
-            id: 2,
-            title: title,
-            scheduleNotificationTime: oneDayAgo,
-          );
+          //NotificationService.sendNotification(title, desc);
+          print('Sending notification for $title');
+          if (tenMinuteAgo.isBefore(selectedDateTime)) {
+            print('Sending notification for $title');
+            print('function called');
+            scheduleNotification(
+              id: 0,
+              title: title,
+              scheduleNotificationTime: tenMinuteAgo,
+            );
+            print('function executed 10 minutes');
+          }
+          // print('function called');
+          // scheduleNotification(
+          //   id: 1,
+          //   title: title,
+          //   scheduleNotificationTime: oneHourAgo,
+          // );
+          // print('function called');
+          // scheduleNotification(
+          //   id: 2,
+          //   title: title,
+          //   scheduleNotificationTime: oneDayAgo,
+          // );
+          // print('function executed 1hour');
           final newTodo = Todo(
             title: title,
             desc: desc,
@@ -194,7 +216,10 @@ class _TodoScreenState extends State<TodoScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("User Not Exist")));
         }
-      } catch (error) {
+      } on PlatformException catch (e) {
+        print('PlatformException: $e');}
+      catch (error) {
+        print('Error: $error');
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.toString())));
       }

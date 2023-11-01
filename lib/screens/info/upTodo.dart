@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 class UpTodo extends StatefulWidget {
   const UpTodo({super.key});
@@ -7,13 +10,30 @@ class UpTodo extends StatefulWidget {
 }
 
 class _UpTodoState extends State<UpTodo> {
+
   @override
-  void initState(){
+    void timer(){
+      Timer(const Duration(seconds: 2),(){
+        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          if(user != null){
+            if(mounted){
+              Navigator.of(context).pushReplacementNamed('/home');
+            }
+          }else{
+            if(mounted){
+              Navigator.of(context).pushReplacementNamed('/slider');
+            }
+          }
+        });
+      });
+    }
+
+    @override
+    void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 2),(){
-      Navigator.of(context).pushReplacementNamed('/slider');
-    });
+    timer();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

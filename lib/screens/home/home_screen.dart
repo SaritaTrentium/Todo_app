@@ -14,7 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool dataFetched = false;
   bool isGridView = false;
   int _currentIndex = 0;
   var logger;
@@ -24,16 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    if (!dataFetched) {
+    setState(() {
       checkUsersTodo();
-    }
+    });
     isGridView = false;
   }
   Future<void> checkUsersTodo() async {
     _todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
     final user = await FirebaseAuth.instance.currentUser;
     if(user != null){
-      dataFetched = true;
       query = '';
       Hive.openBox<Todo>('todos_${user.email}');
       filteredTodos = <Todo>[];

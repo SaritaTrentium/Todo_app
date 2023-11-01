@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:todo_app/models/user_model.dart';
 
 class AuthServices {
+
   static signUpWithGoogle(BuildContext context) async{
     final googleSignIn = GoogleSignIn();
     final googleUser = await googleSignIn.signIn();
@@ -16,36 +17,15 @@ class AuthServices {
 
     try {
       await FirebaseAuth.instance.signInWithCredential(credential);
-
       // You can use FirebaseAuth.instance.currentUser to check if the user is signed in.
       if (FirebaseAuth.instance.currentUser != null) {
         // Navigate to the home screen
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       }
     } catch (e) {
       print("Error signing in with Google: $e");
     }
   }
-
-  // Future<User?> signInWithGoogle() async {
-  //   try {
-  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  //     if (googleUser == null) return null;
-  //
-  //     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-  //     final AuthCredential credential = GoogleAuthProvider.credential(
-  //       accessToken: googleAuth.accessToken,
-  //       idToken: googleAuth.idToken,
-  //     );
-  //
-  //     final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
-  //     final User? user = authResult.user;
-  //     return user;
-  //   } catch (e) {
-  //     print("Error signing in with Google: $e");
-  //     return null;
-  //   }
-  // }
 
   static signUpWithPhoneNumber(String phoneNumber,BuildContext context)async {
     try{
@@ -85,7 +65,7 @@ class AuthServices {
         await FirebaseAuth.instance.currentUser!.updateEmail(email);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration Successfully")));
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
        // return getUserId;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +101,7 @@ class AuthServices {
 
       final user = FirebaseAuth.instance.currentUser;
       if(user != null){
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("You are not LogIn.")));
@@ -145,13 +125,11 @@ class AuthServices {
   }
 
   static signOut() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signOut();
     final auth = FirebaseAuth.instance;
     try {
       final user = auth.currentUser;
       if(user != null){
         await FirebaseAuth.instance.signOut();
-
       }else{
         print('Sign out failed');
       }

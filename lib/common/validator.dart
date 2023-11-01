@@ -13,6 +13,12 @@ class Validator{
     }
     return null;
   }
+  static String? validateDesc(String value){
+    if(value.isEmpty){
+      return "Description can not be empty.";
+    }
+    return null;
+  }
 
   static String? validateEmail(String value){
     if(value.isEmpty){

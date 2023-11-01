@@ -16,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool isLoading = false;
   var logger;
   Validator validator = Validator();
   final _formKey = GlobalKey<FormState>();
@@ -98,25 +99,42 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: CustomElevatedButton(onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        final email = emailController.text.trim();
-                        final password = pwdController.text.trim();
-                        try {
-                          final user = await _authProvider.checkUserExists(
-                              email, password);
-                          if (user != null) {
-                            await _authProvider.signInUser(email, password, context);
-                            saveLoginState(true);
-                            _authProvider.isUserSignedIn();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not exist need to SignUp")));
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CustomElevatedButton(onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final email = emailController.text.trim();
+                          final password = pwdController.text.trim();
+                          try {
+                            setState(() {
+                              isLoading = true;
+                            });
+                            final user = await _authProvider.checkUserExists(
+                                email, password);
+                            if (user != null) {
+                              await _authProvider.signInUser(email, password, context);
+                              saveLoginState(true);
+                              _authProvider.isUserSignedIn();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not exist need to SignUp")));
+                            }
+                          } catch (error) {
+                            print("User not Logged In First SignUp.");
+                          }finally {
+                            // Ensure to reset the loading state when the operation is complete
+                            setState(() {
+                              isLoading = false;
+                            });
                           }
-                        } catch (error) {
-                          print("User not Logged In First SignUp.");
                         }
-                      }
-                    }, text: 'Login'),
+                      }, text: 'Login'),
+                        Visibility(
+                          visible: isLoading, // Control visibility based on loading state
+                          child: CircularProgressIndicator(), // Circular progress indicator
+                        ),
+                    ],
+                    ),
                   ),
                   const SizedBox(
                     height: 20,

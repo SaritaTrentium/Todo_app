@@ -5,14 +5,13 @@ import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   // Initialize the notification service
-  Future<void> initialize() async {
+  static Future initializeNotification({bool scheduled = false}) async {
     // Android Initialization
-    AndroidInitializationSettings androidInitializationSettings = const
+    final AndroidInitializationSettings androidInitializationSettings = const
     AndroidInitializationSettings("todo_icon");
-
     InitializationSettings initializationSettings = InitializationSettings(
         android: androidInitializationSettings);
 
@@ -21,9 +20,20 @@ class NotificationService {
     );
   }
 
-  notificationDetails() {
+  // static void sendNotification(String title,String body)async {
+  //   NotificationDetails notificationDetails = NotificationDetails(
+  //     android:AndroidNotificationDetails('channel_id 8', 'Channel_name',
+  //       channelDescription: "todo_app",
+  //       importance: Importance.max,
+  //       priority: Priority.max,
+  //     ),
+  //   );
+  //   flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails);
+  // }
+
+  static notificationDetails() {
     return const NotificationDetails(
-      android: AndroidNotificationDetails('channel_id', 'Channel_name',
+      android: AndroidNotificationDetails('channel id 0', 'Channel name',
         channelDescription: "todo_app",
         importance: Importance.max,
         priority: Priority.max,
@@ -31,18 +41,17 @@ class NotificationService {
     );
   }
 
-  Future showNotification({int id=0,
+  static Future showNotification({int id=0,
     String? title,
     String? body,
     String? payload,
-    required tz.TZDateTime scheduledDate,
   }) async {
     return flutterLocalNotificationsPlugin.show(
-        id, title, body, await notificationDetails());
+        id, title, body, await notificationDetails(), payload: payload);
   }
 
 
-  Future scheduleNotification({
+  static Future scheduleNotification({
     int id = 0,
     String? title,
     String? desc,
@@ -57,6 +66,7 @@ class NotificationService {
         tz.local,
       ),
       await notificationDetails(),
+      payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation
           .absoluteTime,

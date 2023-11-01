@@ -37,11 +37,9 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   logger.d("Firebase initialization completed");
-  NotificationService().initNotification();
   tz.initializeTimeZones();
   await SharedPreferences.getInstance();
 
-  NotificationService().initialize();
   tz.initializeTimeZones();
 
     await Hive.initFlutter();
