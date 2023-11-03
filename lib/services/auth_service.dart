@@ -5,7 +5,7 @@ import 'package:todo_app/models/user_model.dart';
 
 class AuthServices {
 
-  static signUpWithGoogle(BuildContext context) async{
+  static Future signUpWithGoogle(BuildContext context) async{
     final googleSignIn = GoogleSignIn();
     final googleUser = await googleSignIn.signIn();
     final googleAuth = await googleUser!.authentication;
@@ -20,7 +20,7 @@ class AuthServices {
       // You can use FirebaseAuth.instance.currentUser to check if the user is signed in.
       if (FirebaseAuth.instance.currentUser != null) {
         // Navigate to the home screen
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context).pushNamed('/home');
       }
     } catch (e) {
       print("Error signing in with Google: $e");
@@ -49,7 +49,7 @@ class AuthServices {
     }
   }
 
-  static signUpUser(String name, String email, String password,
+  static Future signUpUser(String name, String email, String password,
       BuildContext context) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -92,7 +92,7 @@ class AuthServices {
     }
   }
 
-  static signInUser(String email, String password, BuildContext context) async {
+  static Future signInUser(String email, String password, BuildContext context) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email, password: password);
@@ -124,7 +124,7 @@ class AuthServices {
     }
   }
 
-  static signOut() async {
+  static Future signOut() async {
     final auth = FirebaseAuth.instance;
     try {
       final user = auth.currentUser;

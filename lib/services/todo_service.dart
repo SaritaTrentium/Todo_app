@@ -80,6 +80,24 @@ class TodoService{
     }
   }
 
+  Future<void> notificationDetails(Todo todo)async{
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if(user != null){
+        await _firestore
+            .collection('notification')
+            .doc(user.email)
+            .collection('notifyDetails')
+            .add({
+          'title': todo.title,
+          'deadline': todo.deadline,
+        });
+      }
+    } catch (error) {
+      throw error.toString();
+    }
+  }
+
   // Future<List<Todo>> fetchSearchTodos(String userEmail, String query) async{
   //   try{
   //     final QuerySnapshot querySnapshot = await _firestore

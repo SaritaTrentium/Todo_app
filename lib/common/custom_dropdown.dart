@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-class DropDown extends StatefulWidget {
-  const DropDown({super.key});
+class CustomDropDown extends StatefulWidget {
+  final Function(String) onSelectionChanged;
+  const CustomDropDown({super.key, required this.onSelectionChanged});
 
   @override
-  State<DropDown> createState() => _DropDownState();
+  State<CustomDropDown> createState() => _CustomDropDownState();
 }
 
-class _DropDownState extends State<DropDown> {
+class _CustomDropDownState extends State<CustomDropDown> {
   String selectedValue = 'tenMinute';
   List<String> scheduleNotify = ['tenMinute', 'oneHour', 'oneDay'];
   @override
@@ -16,6 +17,7 @@ class _DropDownState extends State<DropDown> {
       onChanged: (String? newValue) {
         setState(() {
           selectedValue = newValue!;
+          widget.onSelectionChanged(selectedValue);
         });
       },
       items: scheduleNotify.map((String value) {

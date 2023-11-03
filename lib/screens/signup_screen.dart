@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common/custom_button.dart';
+import 'package:todo_app/common/custom_loader.dart';
 import 'package:todo_app/common/custom_outlinebutton.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
-import 'package:todo_app/common/resources/cudtom_divider.dart';
+import 'package:todo_app/common/resources/custom_divider.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
@@ -49,7 +50,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,color: Colors.deepPurple),),
                   const SizedBox(height: 30),
                   CustomTextFormField(
-                    labelText: 'Enter your Name',
+                    labelText: 'Enter your name',
                     controller: nameController,
                     textInputAction: TextInputAction.next,
                     validator:(value) => Validator.validateTitle(nameController.text),
@@ -79,14 +80,15 @@ class SignUpScreenState extends State<SignUpScreen> {
                       height: 50,
                       child: CustomElevatedButton(onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            isLoading = true;
-                          });
                             String name = nameController.text.trim();
                             String email = emailController.text.trim();
                             String password = pwdController.text.trim();
                             print('Sign Up With This Name :$name ,Email: $email and password: $password');
+
                            _authProvider.signUpUser(name, email, password, context);
+                           setState(() {
+                              isLoading = true;
+                            });
                             final user = FirebaseAuth.instance.currentUser;
                             try{
                               if(user != null){
@@ -98,7 +100,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                               }
                             }catch (error){
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SignUp Process not working Properly.")));
-                                  }finally {
+                             }finally {
                               setState(() {
                                 isLoading = false; // Set loading back to false after the signup process is complete.
                               });
@@ -111,6 +113,8 @@ class SignUpScreenState extends State<SignUpScreen> {
                       }, text: 'Create an account',
                       ),
                     ),
+                  if (isLoading) // Show the CircularProgressIndicator when isLoading is true.
+                    CustomLoader(), // Custom loader
                     const SizedBox(height: 30),
                   CustomDivider(),
                   const SizedBox(height: 30,),

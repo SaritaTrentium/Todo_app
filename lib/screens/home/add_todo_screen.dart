@@ -6,12 +6,13 @@ import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
+import 'package:todo_app/common/custom_dropdown.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
-import 'package:todo_app/services/notification_service.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'dart:async';
+import 'package:todo_app/services/notification_services.dart';
 
 class TodoScreen extends StatefulWidget {
   TodoScreen({super.key});
@@ -25,20 +26,21 @@ class _TodoScreenState extends State<TodoScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
-  NotificationService notificationService = NotificationService();
   DateTime selectedDateTime = DateTime.now();
-
+  String selectedDropdownValue = 'tenMinute';
   var _currentIndex=1;
 
   @override
   void initState() {
     super.initState();
-    NotificationService.initializeNotification();
-    tz.initializeTimeZones();
   }
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void onDropdownValueChanged(String value) {
+    selectedDropdownValue = value;
   }
 
     @override
@@ -85,6 +87,9 @@ class _TodoScreenState extends State<TodoScreen> {
                           onTap: () => _selectDateAndTime(context),
                         ),
                       ),
+                      const SizedBox(width: 20,),
+                      CustomDropDown(
+                        onSelectionChanged: onDropdownValueChanged),
                     ],
                   ),
                 ),
@@ -139,22 +144,6 @@ class _TodoScreenState extends State<TodoScreen> {
     }
   }
 
-  void scheduleNotification({
-    required int id,
-    required String title,
-    required DateTime scheduleNotificationTime,
-  }) {
-    print('Scheduling notification for $title at $scheduleNotificationTime');
-    print('function called');
-    NotificationService.scheduleNotification(
-      id: id,
-      title: title,
-      desc: 'Don\'t forget to complete your todo: $title',
-      payload: 'Time Left ${scheduleNotificationTime.difference(DateTime.now()).inMinutes} minutes',
-      scheduleNotificationTime: scheduleNotificationTime,
-    );
-    print('function executed');
-  }
   void addTodo() async {
     if (_formKey.currentState!.validate()) {
       final title = titleController.text;
@@ -164,45 +153,39 @@ class _TodoScreenState extends State<TodoScreen> {
         User? user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           String userEmail = user.email ?? "";
-          DateTime oneDayAgo = selectedDateTime.subtract(
-              const Duration(days: 1));
-          DateTime oneHourAgo = selectedDateTime.subtract(
-              const Duration(hours: 1));
-          DateTime tenMinuteAgo = selectedDateTime.subtract(
-              const Duration(minutes: 10));
 
-          //NotificationService.sendNotification(title, desc);
-          print('Sending notification for $title');
-          if (tenMinuteAgo.isBefore(selectedDateTime)) {
-            print('Sending notification for $title');
-            print('function called');
-            scheduleNotification(
-              id: 0,
-              title: title,
-              scheduleNotificationTime: tenMinuteAgo,
-            );
-            print('function executed 10 minutes');
-          }
-          // print('function called');
-          // scheduleNotification(
-          //   id: 1,
-          //   title: title,
-          //   scheduleNotificationTime: oneHourAgo,
-          // );
-          // print('function called');
-          // scheduleNotification(
-          //   id: 2,
-          //   title: title,
-          //   scheduleNotificationTime: oneDayAgo,
-          // );
-          // print('function executed 1hour');
+          Timer.periodic(Duration(minutes: 1), (timer) {
+            DateTime currentTime = DateTime.now();
+            int timeDifferenceInMinutes = selectedDateTime
+                .difference(currentTime)
+                .inSeconds;
+            int timeDifferenceInHour = selectedDateTime.difference(currentTime).inSeconds;
+            int timeDifferenceInDay = selectedDateTime.difference(currentTime).inSeconds;
+
+            print('Time Difference: $timeDifferenceInMinutes');
+            print('Time Difference: $timeDifferenceInHour');
+            print('Time Difference: $timeDifferenceInDay');
+
+            if (selectedDropdownValue == 'tenMinute' && timeDifferenceInMinutes <= 600) {
+              print('Calling before 10 minute Notification');
+              NotificationServices.sendNotification(title: title, desc: desc);
+              timer.cancel();
+            }else if(selectedDropdownValue == 'oneHour'  && timeDifferenceInHour <= 3600){
+              print('Calling before  1 hour Notification');
+              NotificationServices.sendNotification(title: title, desc: desc);
+              timer.cancel();
+            }else if(selectedDropdownValue == 'oneDay' && timeDifferenceInDay <= 86400){
+              print('Calling before 1 day Notification');
+              NotificationServices.sendNotification(title: title, desc: desc);
+              timer.cancel();
+            }
+          });
           final newTodo = Todo(
             title: title,
             desc: desc,
             deadline: selectedDateTime,
             userId: userEmail,
           );
-
           late TodoListProvider _todoListProvider;
            _todoListProvider = Provider.of<TodoListProvider>(
               context, listen: false);

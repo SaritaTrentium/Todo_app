@@ -23,7 +23,6 @@ import 'package:todo_app/screens/setting_screen.dart';
 import 'package:todo_app/screens/signup_screen.dart';
 import 'package:todo_app/screens/todo_list_screen.dart';
 import 'package:todo_app/screens/home/add_todo_screen.dart';
-import 'package:todo_app/services/notification_service.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:firebase_core/firebase_core.dart';
 import 'providers/user_provider.dart';

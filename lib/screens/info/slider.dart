@@ -57,12 +57,13 @@ class _SliderScreenState extends State<SliderScreen> {
                         _pageController.animateToPage(entry.key, duration: Duration(milliseconds: 500), curve: Curves.ease);
                       },
                       child: Container(
-                        width: 10.0,
-                        height: 10.0,
+                        width: _currentPage == entry.key ? 16.0 : 10.0,
+                        height: _currentPage == entry.key ? 16.0 : 10.0,
                         margin: EdgeInsets.symmetric(horizontal: 4.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _currentPage == entry.key ? Colors.deepPurple : Colors.blueGrey.shade200,
+
                         ),
                       ),
                     );
