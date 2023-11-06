@@ -120,17 +120,12 @@ class SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 30,),
                   CustomOutlineButton(
                       onPressed: () =>_authProvider.signUpWithGoogle(context),
-                       text: 'Google',
+                       text: 'Sign up with Google',
                        color: Colors.white,
                        textColor: Colors.deepPurple,
                        fontSize: 25,
                        image: Image.asset('assets/info/google.png',height: 50,width: 50,),),
                   const SizedBox(height: 20,),
-                  CustomOutlineButton(
-                      text: 'PhoneNumber', color: Colors.white, textColor: Colors.deepPurple, fontSize: 25,image: Image.asset('/assets/info/phone.png',height: 20,width: 20,),
-                      onPressed: (){
-                        Navigator.of(context).pushReplacementNamed('/otp');
-                  }),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

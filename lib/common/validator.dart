@@ -49,5 +49,6 @@ class Validator{
     if(!phoneRegExp.hasMatch(number)){
       return "Phone Number length should be 10";
     }
+    return null;
   }
 }

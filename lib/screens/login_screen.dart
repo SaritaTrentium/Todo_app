@@ -102,33 +102,37 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        CustomElevatedButton(onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          final email = emailController.text.trim();
-                          final password = pwdController.text.trim();
-                          try {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            final user = await _authProvider.checkUserExists(
-                                email, password);
-                            if (user != null) {
-                              await _authProvider.signInUser(email, password, context);
-                              saveLoginState(true);
-                              _authProvider.isUserSignedIn();
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not exist need to SignUp")));
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: CustomElevatedButton(onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final email = emailController.text.trim();
+                            final password = pwdController.text.trim();
+                            try {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              final user = await _authProvider.checkUserExists(
+                                  email, password);
+                              if (user != null) {
+                                await _authProvider.signInUser(email, password, context);
+                                saveLoginState(true);
+                                _authProvider.isUserSignedIn();
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Not exist need to SignUp")));
+                              }
+                            } catch (error) {
+                              print("User not Logged In First SignUp.");
+                            }finally {
+                              // Ensure to reset the loading state when the operation is complete
+                              setState(() {
+                                isLoading = false;
+                              });
                             }
-                          } catch (error) {
-                            print("User not Logged In First SignUp.");
-                          }finally {
-                            // Ensure to reset the loading state when the operation is complete
-                            setState(() {
-                              isLoading = false;
-                            });
                           }
-                        }
                       }, text: 'Login'),
+                        ),
                         Visibility(
                           visible: isLoading, // Control visibility based on loading state
                           child: CircularProgressIndicator(), // Circular progress indicator
@@ -143,15 +147,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20,),
                   CustomOutlineButton(
                     onPressed: () =>_authProvider.signUpWithGoogle(context),
-                    text: 'Google', color: Colors.white, textColor: Colors.deepPurple,fontSize: 25,),
+                    text: 'Sign in with Google', color: Colors.white, textColor: Colors.deepPurple,fontSize: 25,),
                   const SizedBox(
                     height: 20,
                   ),
-                  CustomOutlineButton(
-                      text: 'PhoneNumber', color: Colors.white, textColor: Colors.deepPurple, fontSize: 25,
-                      onPressed: (){
-                        Navigator.of(context).pushReplacementNamed('/otp');
-                      }),
                   const SizedBox(
                     height: 20,
                   ),

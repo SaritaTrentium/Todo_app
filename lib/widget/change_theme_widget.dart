@@ -7,11 +7,42 @@ class ChangeThemeButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeChangerProvider>(context);
-    return Switch(
-        value: themeProvider.themeMode == ThemeMode.dark,
-        onChanged: (value) {
-          themeProvider.toggleTheme();
-    });
+    late ThemeChangerProvider _themeProvider;
+    _themeProvider = Provider.of<ThemeChangerProvider>(context, listen: false);
+    return InkWell(
+      onTap: (){
+        _themeProvider.toggleTheme();
+      },
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: _themeProvider.themeMode == ThemeMode.dark
+              ? Colors.black
+              : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.brightness_6,
+              color: _themeProvider.themeMode == ThemeMode.dark
+                  ? Colors.white
+                  : Colors.black,
+            ),
+            SizedBox(width: 5),
+            Text(
+              _themeProvider.themeMode == ThemeMode.dark ? 'Light' : 'Dark',
+              style: TextStyle(
+                color: _themeProvider.themeMode == ThemeMode.dark
+                    ? Colors.white
+                    : Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

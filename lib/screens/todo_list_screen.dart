@@ -15,7 +15,6 @@ class TodoListScreen extends StatefulWidget {
   State<TodoListScreen> createState() => _TodoListScreenState();
 }
 class _TodoListScreenState extends State<TodoListScreen> {
-  @override
   var logger;
   late AuthProvider _authProvider;
   late TodoListProvider _todoListProvider;

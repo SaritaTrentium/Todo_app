@@ -11,8 +11,7 @@ class UpTodo extends StatefulWidget {
 
 class _UpTodoState extends State<UpTodo> {
 
-  @override
-    void timer(){
+  void timer(){
       Timer(const Duration(seconds: 2),(){
         FirebaseAuth.instance.authStateChanges().listen((User? user) {
           if(user != null){

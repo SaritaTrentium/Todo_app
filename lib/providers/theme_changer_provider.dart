@@ -21,5 +21,12 @@ class ThemeChangerProvider extends ChangeNotifier{
     saveThemeModePreference(_themeMode);
     notifyListeners();
   }
+
+  void resetThemeMode(){
+    _themeMode = ThemeMode.system;
+    clearThemeMode();
+    notifyListeners();
+  }
+
 }
 

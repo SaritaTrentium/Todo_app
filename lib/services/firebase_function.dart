@@ -26,17 +26,4 @@ class FirestoreServices{
         desc: doc['description'], deadline: doc['deadline'], userId: doc['userId'],
       )).toList());
     }
-    //       .get();
-    //
-    //   if(userQuery.docs.isNotEmpty){
-    //     return userQuery.docs.first;
-    //   }else {
-    //     return null;
-    //   }
-    // } catch (error){
-    //   print('Error fetching user data: $error');
-    //   throw error;
-    // }
-    //
-    // }
   }

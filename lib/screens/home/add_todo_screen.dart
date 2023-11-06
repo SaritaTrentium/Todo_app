@@ -194,7 +194,7 @@ class _TodoScreenState extends State<TodoScreen> {
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Added Successfully"),),);
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("User Not Exist")));

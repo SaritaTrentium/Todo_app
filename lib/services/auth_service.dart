@@ -20,32 +20,10 @@ class AuthServices {
       // You can use FirebaseAuth.instance.currentUser to check if the user is signed in.
       if (FirebaseAuth.instance.currentUser != null) {
         // Navigate to the home screen
-        Navigator.of(context).pushNamed('/home');
+        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
       }
     } catch (e) {
       print("Error signing in with Google: $e");
-    }
-  }
-
-  static signUpWithPhoneNumber(String phoneNumber,BuildContext context)async {
-    try{
-      await FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: phoneNumber,
-          verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
-            await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
-          },
-          verificationFailed: (FirebaseAuthException e){
-            print('Verification failed: ${e.message}');
-          },
-          codeSent: (String verificationId, int? resendToken){
-
-          },
-          codeAutoRetrievalTimeout: (String verificationId){}
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration Successfully with Google")));
-    }on FirebaseAuthException catch(e){
-      SnackBar(content: Text(e.toString()));
     }
   }
 
@@ -65,7 +43,7 @@ class AuthServices {
         await FirebaseAuth.instance.currentUser!.updateEmail(email);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration Successfully")));
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context).pushReplacementNamed('/home');
        // return getUserId;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -101,7 +79,7 @@ class AuthServices {
 
       final user = FirebaseAuth.instance.currentUser;
       if(user != null){
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context).pushReplacementNamed('/home');
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("You are not LogIn.")));

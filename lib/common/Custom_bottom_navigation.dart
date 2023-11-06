@@ -19,21 +19,22 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
       type: BottomNavigationBarType.fixed,
       selectedItemColor: Colors.white,
       unselectedItemColor: Colors.white.withOpacity(.60),
-      selectedFontSize: 14,
+      selectedFontSize: 16,
       unselectedFontSize: 14,
+      currentIndex: widget.currentIndex,
       onTap: (value){
         switch (value){
           case 0:
-            Navigator.of(context).pushReplacementNamed('/home');
+            Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
             break;
           case 1:
-            Navigator.of(context).pushReplacementNamed('/addTodo');
+            Navigator.of(context).pushNamed('/addTodo');
             break;
           case 2:
-            Navigator.of(context).pushReplacementNamed('/taskComplete');
+            Navigator.of(context).pushNamed('/taskComplete');
             break;
           case 3:
-            Navigator.of(context).pushReplacementNamed('/userPanel');
+            Navigator.of(context).pushNamed('/userPanel');
             break;
         }
       },
@@ -51,7 +52,7 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
           icon: Icon(Icons.task),
         ),
         BottomNavigationBarItem(
-          label : 'User Panel',
+          label : 'Profile',
           icon: Icon(Icons.account_circle),
         ),
       ],

@@ -1,6 +1,5 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/models/slider_data.dart';
+import 'package:todo_app/models/slider_model.dart';
 class SliderScreen extends StatefulWidget {
   const SliderScreen({super.key});
 

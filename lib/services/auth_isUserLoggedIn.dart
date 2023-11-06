@@ -11,13 +11,18 @@ import 'package:shared_preferences/shared_preferences.dart';
       return prefs.getBool('isUserLoggedIn') ?? false;
   }
 
-Future<void> saveThemeModePreference(ThemeMode themeMode) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('theme_mode', themeMode.toString());
-}
+  Future<void> saveThemeModePreference(ThemeMode themeMode) async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('theme_mode', themeMode.toString());
+  }
 
-Future<ThemeMode> getThemeModePreference() async {
-  final prefs = await SharedPreferences.getInstance();
-  final themeModeString = prefs.getString('theme_mode');
-  return themeModeString == 'ThemeMode.dark' ? ThemeMode.dark : ThemeMode.light;
-}
+  Future<ThemeMode> getThemeModePreference() async {
+      final prefs = await SharedPreferences.getInstance();
+      final themeModeString = prefs.getString('theme_mode');
+      return themeModeString == 'ThemeMode.dark' ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  Future<void> clearThemeMode()async{
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('theme');
+  }

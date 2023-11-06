@@ -6,7 +6,7 @@ import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
-import 'package:todo_app/screens/widgets/viewMode_widget.dart';
+import 'package:todo_app/widget/viewMode_widget.dart';
 import '../../services/notification_services.dart';
 import 'package:timezone/data/latest.dart' as tz;
 class HomeScreen extends StatefulWidget {
@@ -34,6 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
       checkUsersTodo();
     });
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+
   Future<void> checkUsersTodo() async {
     _todoListProvider = Provider.of<TodoListProvider>(context, listen: false);
     final user = await FirebaseAuth.instance.currentUser;
@@ -55,9 +62,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = false;
+    String searchText = '';
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'My Todo',
+        title: '${FirebaseAuth.instance.currentUser!.displayName} Todo',
         centerTitle: false,
         automaticallyImplyLeading: false,
         actions: [
@@ -67,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               setState(() {
                 isSearching = !isSearching;
               });
+              Navigator.of(context).pushNamed('/search');
             }, icon: Icon(Icons.search)),
           ),
           PopupMenuButton(itemBuilder: (context){
