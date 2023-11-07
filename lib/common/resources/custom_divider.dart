@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 class CustomDivider extends StatelessWidget {
   const CustomDivider({super.key});
 
@@ -15,7 +16,7 @@ class CustomDivider extends StatelessWidget {
                     color: Colors.grey,
                   )
               ),
-              Text("OR"),
+              Text(StringResources.getOR),
               Expanded(
                   child: Divider(
                     height: 1,

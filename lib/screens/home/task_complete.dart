@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 class TaskComplete extends StatefulWidget {
   const TaskComplete({super.key});
 
@@ -14,7 +15,7 @@ class _TaskCompleteState extends State<TaskComplete> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Task Complete',
+        title: StringResources.getTodoTaskCompleteTitle,
       ),
       body: Center(
         child: Container(

@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
   Future<void> saveLoginState(bool isLoggedIn) async {
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setBool('isUserLoggedIn', isLoggedIn);
+    final box = await Hive.openBox('loginState');
+   await box.put('isUserLoggedIn', isLoggedIn);
   }
 
   Future<bool> getLoginState() async {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getBool('isUserLoggedIn') ?? false;
+     final box = await Hive.openBox('loginState');
+     return box.get('isUserLoggedIn', defaultValue: false);
   }
 
   Future<void> saveThemeModePreference(ThemeMode themeMode) async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('theme_mode', themeMode.toString());
+      final box = await Hive.openBox('themePreferences');
+      await box.put('theme_mode', themeMode);
   }
 
   Future<ThemeMode> getThemeModePreference() async {
-      final prefs = await SharedPreferences.getInstance();
-      final themeModeString = prefs.getString('theme_mode');
-      return themeModeString == 'ThemeMode.dark' ? ThemeMode.dark : ThemeMode.light;
+      final box = await Hive.openBox('themePreferences');
+      return box.get('theme_mode', defaultValue: ThemeMode.light);
   }
 
-  Future<void> clearThemeMode()async{
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('theme');
-  }
+  Future<void> clearThemeMode() async {
+      final box = await Hive.openBox('themePreferences');
+      await box.delete('theme_mode');
+      await box.close();
+}

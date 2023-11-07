@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/widget/viewMode_widget.dart';
@@ -62,10 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     bool isSearching = false;
-    String searchText = '';
+    final brightness = Theme.of(context).brightness;
     return Scaffold(
       appBar: CustomAppBar(
-        title: '${FirebaseAuth.instance.currentUser!.displayName} Todo',
+        title: StringResources.getTodoHomeTitle,
         centerTitle: false,
         automaticallyImplyLeading: false,
         actions: [
@@ -82,19 +83,26 @@ class _HomeScreenState extends State<HomeScreen> {
             return [
               PopupMenuItem<int>(
                 value: 0,
-                child: Text('Grid View',
+                child: Text(StringResources.getGridView,
                   style: TextStyle(
                       fontSize: 16,
-                      color: currentViewMode == ViewMode.GridView ? Colors.deepPurple : Colors.deepPurple.shade300,
-                      fontWeight: FontWeight.bold),),
+                      fontWeight: FontWeight.bold,
+                      color: brightness == Brightness.dark
+                      ? currentViewMode == ViewMode.GridView ? Colors.white : Colors.white38
+                      : currentViewMode == ViewMode.GridView ? Colors.deepPurple : Colors.deepPurple.shade200,),
+                  ),
               ),
               PopupMenuItem<int>(
                 value: 1,
-                child: Text('List View',
+                child: Text(StringResources.getListView,
                     style: TextStyle(
                         fontSize: 16,
-                        color: currentViewMode == ViewMode.ListView ? Colors.deepPurple :Colors.deepPurple.shade300,
-                        fontWeight: FontWeight.bold)),),
+                      fontWeight: FontWeight.bold,
+                      color: brightness == Brightness.dark
+                          ? currentViewMode == ViewMode.ListView ? Colors.white : Colors.white38
+                          : currentViewMode == ViewMode.ListView ? Colors.deepPurple : Colors.deepPurple.shade200,),
+                ),
+              ),
             ];
           },
           onSelected: (value){

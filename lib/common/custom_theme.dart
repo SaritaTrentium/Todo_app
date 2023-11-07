@@ -11,6 +11,14 @@ class CustomTheme{
       secondary: Colors.grey[80]!,
       onBackground: Colors.black12,
     ),
+    focusColor: Colors.grey,
+    textTheme: TextTheme(
+      displayMedium: TextStyle(color: Colors.white24),
+      displaySmall: TextStyle(color: Colors.grey),
+      headlineLarge: TextStyle(fontSize:40,fontWeight: FontWeight.bold),
+      headlineSmall: TextStyle(fontSize: 14),
+      bodyLarge: TextStyle(fontSize: 16),
+    ),
     scaffoldBackgroundColor: Colors.black,
   );
 
@@ -23,6 +31,12 @@ class CustomTheme{
     secondary: Colors.white,
     onBackground: Colors.deepPurpleAccent,
   ),
+    focusColor: Colors.deepPurple.shade300,
+    textTheme: TextTheme(
+      displayMedium: TextStyle(color: Colors.white24),
+      displaySmall: TextStyle(color: Colors.deepPurple),
+      headlineLarge: TextStyle(color: Colors.purple.shade400,fontSize:40,fontWeight: FontWeight.bold),
+    ),
     scaffoldBackgroundColor: Colors.purple.shade50,
 );
 }

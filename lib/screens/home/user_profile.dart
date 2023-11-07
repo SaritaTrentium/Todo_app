@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/models/profile_listview_model.dart';
-import 'package:todo_app/providers/auth_provider.dart';
 class UserPanel extends StatefulWidget {
   const UserPanel({super.key});
 
@@ -14,14 +13,15 @@ class UserPanel extends StatefulWidget {
 
 class _UserPanelState extends State<UserPanel> {
   late PageController _pageController;
-  late AuthProvider _authProvider;
   var _currentIndex= 3;
-  String? userName = FirebaseAuth.instance.currentUser!.displayName;
+  String? userName;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 1.0);
+    final user = FirebaseAuth.instance.currentUser;
+    userName = user != null ? user.displayName : null;
   }
 
   @override
@@ -31,23 +31,43 @@ class _UserPanelState extends State<UserPanel> {
   }
   @override
   Widget build(BuildContext context) {
-    _authProvider = Provider.of<AuthProvider>(context, listen: false);
+   // String? userName = FirebaseAuth.instance.currentUser!.displayName;
+    final brightness = Theme.of(context).brightness;
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Profile',
+        title: StringResources.getTodoProfileTitle,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          SizedBox(
-            width: 120,
-            height: 120,
-            child: ClipRRect(borderRadius: BorderRadius.circular(100),child: const Image(image: AssetImage('assets/home/noTodo.png')),),
-          ),
-          const SizedBox(height: 10),
-          Text(userName!,style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold,color: Colors.deepPurple),),
-          const SizedBox(height: 10),
+          if (userName != null)
+            Container(
+              width: 100,
+              height: 100,
+              child: CircleAvatar(
+                child: Text(
+                  userName!.isNotEmpty ? userName![0].toUpperCase() : '?',
+                  style: TextStyle(
+                    fontSize: 60,
+                    color: brightness == Brightness.dark
+                        ? Colors.black54
+                        : Colors.deepPurple,
+                  ),
+                ),
+                backgroundColor: brightness == Brightness.dark
+                    ? Colors.grey
+                    : Colors.deepPurple.shade100,
+              ),
+            ),
+          const SizedBox(height: 20),
+          Text(userName!,style: TextStyle(
+            fontSize: 30,
+            color: brightness == Brightness.dark
+                ? Colors.white54
+                : Colors.deepPurple,
+          ),),
+          const SizedBox(height: 40),
           Expanded(
             child: ListView.builder(
                 itemCount: profileView.length,

@@ -7,6 +7,7 @@ import 'package:todo_app/common/custom_loader.dart';
 import 'package:todo_app/common/custom_outlinebutton.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/resources/custom_divider.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/services/auth_isUserLoggedIn.dart';
@@ -33,110 +34,123 @@ class SignUpScreenState extends State<SignUpScreen> {
     if (_authProvider.isLoggedIn) {
       return LoginScreen();
       }
+    final brightness = Theme.of(context).brightness;
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Center(
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Form(
             key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text('SignUp',
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold,color: Colors.deepPurple),),
-                  const SizedBox(height: 30),
-                  CustomTextFormField(
-                    labelText: 'Enter your name',
-                    controller: nameController,
-                    textInputAction: TextInputAction.next,
-                    validator:(value) => Validator.validateTitle(nameController.text),
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextFormField(
-                    labelText: 'Enter your email',
-                    controller: emailController,
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.emailAddress,
-                    validator:(value) => Validator.validateEmail(emailController.text),
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextFormField(
-                    labelText: 'Enter your password',
-                    controller: pwdController,
-                    textInputAction: TextInputAction.done,
-                    validator: (value) => Validator.validatePassword(pwdController.text),
-                    isPassword: true,
-                    obscureText: true,
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: CustomElevatedButton(onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                            String name = nameController.text.trim();
-                            String email = emailController.text.trim();
-                            String password = pwdController.text.trim();
-                            print('Sign Up With This Name :$name ,Email: $email and password: $password');
-
-                           _authProvider.signUpUser(name, email, password, context);
-                           setState(() {
-                              isLoading = true;
-                            });
-                            final user = FirebaseAuth.instance.currentUser;
-                            try{
-                              if(user != null){
-                                saveLoginState(true);
-                                final todoBox = await Hive.openBox<Todo>('todos_${user.email}');
-                                await todoBox.clear();
-                              } else{
-                                print("Again SignUp Properly");
-                              }
-                            }catch (error){
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SignUp Process not working Properly.")));
-                             }finally {
-                              setState(() {
-                                isLoading = false; // Set loading back to false after the signup process is complete.
-                              });
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text("Sign-up failed. Please try again."),
-                            ));
-                          }
-                      }, text: 'Create an account',
-                      ),
-                    ),
-                  if (isLoading) // Show the CircularProgressIndicator when isLoading is true.
-                    CustomLoader(), // Custom loader
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 128.0,left: 32.0, right: 32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(StringResources.getSignupTitle,
+                      style: TextStyle(
+                        color: brightness == Brightness.dark
+                            ? Colors.white // Text color for dark mode
+                            : Colors.deepPurple, // Text color for light mode
+                        fontSize: 40,
+                        fontWeight: FontWeight.w500,
+                      )),
                     const SizedBox(height: 30),
-                  CustomDivider(),
-                  const SizedBox(height: 30,),
-                  CustomOutlineButton(
+                    CustomTextFormField(
+                      labelText: StringResources.getEnterName,
+                      controller: nameController,
+                      textInputAction: TextInputAction.next,
+                      validator:(value) => Validator.validateTitle(nameController.text),
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextFormField(
+                      labelText: StringResources.getEnterEmail,
+                      controller: emailController,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.emailAddress,
+                      validator:(value) => Validator.validateEmail(emailController.text),
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextFormField(
+                      labelText: StringResources.getEnterPassword,
+                      controller: pwdController,
+                      textInputAction: TextInputAction.done,
+                      validator: (value) => Validator.validatePassword(pwdController.text),
+                      isPassword: true,
+                      obscureText: true,
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: CustomElevatedButton(onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                              String name = nameController.text.trim();
+                              String email = emailController.text.trim();
+                              String password = pwdController.text.trim();
+                              print('Sign Up With This Name :$name ,Email: $email and password: $password');
+
+                             _authProvider.signUpUser(name, email, password, context);
+                             setState(() {
+                                isLoading = true;
+                              });
+                              final user = FirebaseAuth.instance.currentUser;
+                              try{
+                                if(user != null){
+                                  saveLoginState(true);
+                                  final todoBox = await Hive.openBox<Todo>('todos_${user.email}');
+                                  await todoBox.clear();
+                                } else{
+                                  print("Again SignUp Properly");
+                                }
+                              }catch (error){
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("SignUp Process not working Properly.")));
+                               }finally {
+                                setState(() {
+                                  isLoading = false; // Set loading back to false after the signup process is complete.
+                                });
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("Sign-up failed. Please try again."),
+                              ));
+                            }
+                        }, text: StringResources.getCreateAccount,
+                        ),
+                      ),
+                    if (isLoading) // Show the CircularProgressIndicator when isLoading is true.
+                      CustomLoader(), // Custom loader
+                      const SizedBox(height: 30),
+                    CustomDivider(),
+                    const SizedBox(height: 30,),
+                    CustomOutlineButton(
                       onPressed: () =>_authProvider.signUpWithGoogle(context),
-                       text: 'Sign up with Google',
-                       color: Colors.white,
-                       textColor: Colors.deepPurple,
-                       fontSize: 25,
-                       image: Image.asset('assets/info/google.png',height: 50,width: 50,),),
-                  const SizedBox(height: 20,),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Already have an account?'),
-                      TextButton(
-                          onPressed: () {
-                                Navigator.of(context).pushReplacementNamed('/login');
-                            }, child: const Text('Login',style: TextStyle(color: Colors.deepPurple),)),
-                    ],
-                  ),
-                ],
+                      text: StringResources.getSignInGoogle, color: Colors.white, textColor: brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.deepPurple,fontSize: 25,),
+                    const SizedBox(height: 20,),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(StringResources.getAlreadyAccount),
+                        TextButton(
+                            onPressed: () {
+                                  Navigator.of(context).pushReplacementNamed('/login');
+                              }, child: Text(StringResources.getLoginTitle,style: TextStyle(color: brightness == Brightness.dark
+                            ? Colors.white // Text color for dark mode
+                            : Colors.deepPurple, // Text color for light mode
+                          fontWeight: FontWeight.w500,
+                        ),
+                         ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

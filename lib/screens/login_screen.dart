@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_outlinebutton.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/common/validator.dart';
 import '../common/resources/custom_divider.dart';
 import '../providers/auth_provider.dart';
@@ -57,25 +58,31 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     late AuthProvider _authProvider;
     _authProvider = Provider.of<AuthProvider>(context);
+    final brightness = Theme.of(context).brightness;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Form(
-            key: _formKey,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(left: 32, right: 32),
+              padding: const EdgeInsets.only(top: 128.0,left: 32, right: 32),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Login",
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.deepPurple),),
+                  Text(StringResources.getLoginTitle,
+                    style: TextStyle(
+                      color: brightness == Brightness.dark
+                          ? Colors.white // Text color for dark mode
+                          : Colors.deepPurple, // Text color for light mode
+                      fontSize: 40,
+                      fontWeight: FontWeight.w500,
+                    )),
                   const SizedBox(
-                    height: 30,
+                    height: 40,
                   ),
                   CustomTextFormField(
-                    labelText: 'Enter your email',
+                    labelText: StringResources.getEnterEmail,
                     controller: emailController,
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
@@ -86,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 20,
                   ),
                   CustomTextFormField(
-                    labelText: 'Enter your password',
+                    labelText: StringResources.getEnterPassword,
                     controller: pwdController,
                     textInputAction: TextInputAction.done,
                     validator: (value) => Validator.validatePassword(pwdController.text),
@@ -131,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             }
                           }
-                      }, text: 'Login'),
+                      }, text: StringResources.getLoginTitle),
                         ),
                         Visibility(
                           visible: isLoading, // Control visibility based on loading state
@@ -141,26 +148,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 40,
                   ),
                   CustomDivider(),
-                  const SizedBox(height: 20,),
+                  const SizedBox(height: 50,),
                   CustomOutlineButton(
                     onPressed: () =>_authProvider.signUpWithGoogle(context),
-                    text: 'Sign in with Google', color: Colors.white, textColor: Colors.deepPurple,fontSize: 25,),
+                    text: StringResources.getSignInGoogle, color: Colors.white, textColor: brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.deepPurple,fontSize: 25,),
                   const SizedBox(
-                    height: 20,
-                  ),
-                  const SizedBox(
-                    height: 20,
+                    height: 30,
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text("Don't have an account?"),
+                      Text(StringResources.getHaveAccount),
                       TextButton(onPressed: () {
                         Navigator.of(context).pushReplacementNamed('/signUp');
-                      }, child: const Text('SignUp',style: TextStyle(color: Colors.deepPurple),)),
+                      }, child: Text(StringResources.getSignupTitle,style: TextStyle(
+                        color: brightness == Brightness.dark
+                            ? Colors.white // Text color for dark mode
+                            : Colors.deepPurple, // Text color for light mode
+                        fontWeight: FontWeight.w500,
+                         ),
+                        ),
+                      ),
                     ],
                   ),
                 ],

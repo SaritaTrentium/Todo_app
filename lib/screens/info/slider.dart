@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/models/slider_model.dart';
 class SliderScreen extends StatefulWidget {
   const SliderScreen({super.key});
@@ -24,6 +25,7 @@ class _SliderScreenState extends State<SliderScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -79,10 +81,19 @@ class _SliderScreenState extends State<SliderScreen> {
           children: [
             TextButton(onPressed: (){
               Navigator.of(context).pushNamed('/welcome');
-            }, child: Text('SKIP'),),
+            }, child: Text(StringResources.getSkip,
+                style: TextStyle(
+                  color: brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.deepPurple,
+                        fontSize: 16),
+              ),
+            ),
             TextButton(onPressed: (){
               _pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease);
-            }, child: Text('Next'),),
+            }, child: Text(StringResources.getNext, style: TextStyle(color: brightness == Brightness.dark
+                 ? Colors.white
+                 : Colors.deepPurple, fontSize: 16),),),
           ],
       )
     : Row(
@@ -90,7 +101,11 @@ class _SliderScreenState extends State<SliderScreen> {
         children: [
           TextButton(onPressed: (){
             Navigator.of(context).pushNamed('/welcome');
-          }, child: Text('Get Started'),),
+          }, child: Text(StringResources.getStarted,style: TextStyle(color: brightness == Brightness.dark
+               ? Colors.white
+               : Colors.deepPurple, fontSize: 16),
+            ),
+          ),
         ],
       ),
     );
@@ -106,6 +121,7 @@ class _SliderScreenState extends State<SliderScreen> {
 
   }
   Widget carouselCard(SliderDataModel data){
+    final brightness = Theme.of(context).brightness;
     return Column(
       children: <Widget>[
         Expanded(
@@ -132,12 +148,23 @@ class _SliderScreenState extends State<SliderScreen> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 20.0),
-          child: Text(data.title,  style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold),),
+          child: Text(data.title,  style: TextStyle(
+              color: brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold),),
         ),
         const SizedBox(height: 30,),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(data.subTitle,  style: TextStyle(color: Colors.blueGrey.shade400, fontSize: 16, fontWeight: FontWeight.bold),),
+          child: Text(data.subTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: brightness == Brightness.dark
+                ? Colors.white54
+                : Colors.black54,
+                    fontSize: 16),),
         ),
         const SizedBox(height: 30,),
       ],

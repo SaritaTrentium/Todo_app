@@ -3,17 +3,20 @@ import 'package:todo_app/services/auth_isUserLoggedIn.dart';
 
 class ThemeChangerProvider extends ChangeNotifier{
 
-  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.system;
   ThemeMode get themeMode => _themeMode;
+
+  void setTheme(ThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners(); // Notify listeners after the theme changes
+  }
 
   ThemeChangerProvider() {
     // Initialize the theme mode from SharedPreferences when the provider is created
     getThemeModePreference().then((themeMode) {
-      if (themeMode != null) {
-        _themeMode = themeMode;
-        notifyListeners();
-      }
-    });
+      _themeMode = themeMode;
+      notifyListeners();
+        });
   }
 
   void toggleTheme () {

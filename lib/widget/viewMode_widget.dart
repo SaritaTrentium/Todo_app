@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 
@@ -25,7 +26,7 @@ class TodoUtils {
                   if (newValue != null) {
                     todoListProvider.updateTodoCompletion(todo, newValue);
                   } else {
-                    print("checkbox value null");
+                    print(StringResources.getCheckValueNull);
                   }
                 },
               ),
@@ -49,16 +50,15 @@ class TodoUtils {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: Text("Delete Confirmation"),
+                            title: Text(StringResources.getDeleteConfirm),
                             content:
-                            Text("Are you sure you want to delete this ${todo
-                                .title} item?"),
+                            Text(StringResources.getDeleteSure),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("Cancel"),
+                                child: Text(StringResources.getCancel),
                               ),
                               TextButton(
                                 onPressed: () {
@@ -68,22 +68,19 @@ class TodoUtils {
                                     todoListProvider.deleteTodo(todo);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                            "Delete Successfully ${todo
-                                                .title}"),
+                                        content: Text(StringResources.getDeleteSuccess),
                                       ),
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                        content: Text(
-                                            "Delete not working properly"),
+                                        content: Text(StringResources.getDeleteWorkNotProperly),
                                       ),
                                     );
                                   }
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("Delete"),
+                                child: Text(StringResources.getDelete),
                               )
                             ],
                           );
@@ -121,7 +118,7 @@ class TodoUtils {
                     todo.isCompleted = newValue;
                   todoListProvider.updateTodoCompletion(todo, newValue);
                 } else {
-                  print("checkbox value null");
+                  print(StringResources.getCheckValueNull);
                 }
               },
             ),
@@ -140,14 +137,14 @@ class TodoUtils {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("Delete Confirmation"),
-                      content: Text("Are you sure you want to delete this ${todo.title} item?"),
+                      title: Text(StringResources.getDeleteConfirm),
+                      content: Text(StringResources.getDeleteSure),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text("Cancel"),
+                          child: Text(StringResources.getCancel),
                         ),
                         TextButton(
                           onPressed: () {
@@ -156,20 +153,19 @@ class TodoUtils {
                                 todoListProvider.deleteTodo(todo);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(
-                                      "Delete Successfully ${todo.title}"),
+                                  content: Text(StringResources.getDeleteConfirm),
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text("Delete not working properly"),
+                                  content: Text(StringResources.getDeleteWorkNotProperly),
                                 ),
                               );
                             }
                             Navigator.of(context).pop();
                           },
-                          child: Text("Delete"),
+                          child: Text(StringResources.getDelete),
                         ),
                       ],
                     );

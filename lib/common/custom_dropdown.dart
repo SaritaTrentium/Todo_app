@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 class CustomDropDown extends StatefulWidget {
   final Function(String) onSelectionChanged;
   const CustomDropDown({super.key, required this.onSelectionChanged});
@@ -8,8 +9,8 @@ class CustomDropDown extends StatefulWidget {
 }
 
 class _CustomDropDownState extends State<CustomDropDown> {
-  String selectedValue = 'tenMinute';
-  List<String> scheduleNotify = ['tenMinute', 'oneHour', 'oneDay'];
+  String selectedValue = StringResources.getTenMin;
+  List<String> scheduleNotify = [StringResources.getTenMin, StringResources.getOneHour , StringResources.getOneDay];
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(

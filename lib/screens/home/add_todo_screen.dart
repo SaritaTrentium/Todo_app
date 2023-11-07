@@ -7,6 +7,7 @@ import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/custom_dropdown.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/common/validator.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +28,7 @@ class _TodoScreenState extends State<TodoScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   DateTime selectedDateTime = DateTime.now();
-  String selectedDropdownValue = 'tenMinute';
+  String selectedDropdownValue = StringResources.getTenMin;
   var _currentIndex=1;
 
   @override
@@ -47,7 +48,7 @@ class _TodoScreenState extends State<TodoScreen> {
     Widget build(BuildContext context) {
       return Scaffold(
         appBar: CustomAppBar(
-          title: 'Add Todo',
+          title: StringResources.getTodoAddTodoTitle,
           centerTitle: true,
         ),
         body: Form(
@@ -59,7 +60,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   padding: const EdgeInsets.all(16.0),
                      child: CustomTextFormField(
                        controller: titleController,
-                       labelText: 'Enter Title',
+                       labelText: StringResources.getAddTodoTitle,
                        textInputAction: TextInputAction.next,
                        validator:(value) => Validator.validateTitle(titleController.text),
                      ),
@@ -68,7 +69,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: CustomTextFormField(
                     controller: descController,
-                    labelText: 'Enter Description',
+                    labelText: StringResources.getAddTodoDesc,
                     textInputAction: TextInputAction.next,
                     validator:(value) => Validator.validateDesc(descController.text),
                   ),
@@ -83,7 +84,7 @@ class _TodoScreenState extends State<TodoScreen> {
                           textInputAction: TextInputAction.done,
                           controller: TextEditingController(
                                    text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
-                          labelText: 'Select Date And Time',
+                          labelText: StringResources.getAddTodoSelectedDateTime,
                           onTap: () => _selectDateAndTime(context),
                         ),
                       ),
@@ -98,7 +99,10 @@ class _TodoScreenState extends State<TodoScreen> {
                 ),
                 CustomElevatedButton(
                   onPressed: addTodo,
-                  text: 'Add',
+                  text: StringResources.getAdd,
+                  textColor: Theme.of(context).brightness == Brightness.dark
+                      ?  Colors.black
+                      :  Colors.white,
                 ),
               ],
             ),
@@ -128,7 +132,7 @@ class _TodoScreenState extends State<TodoScreen> {
       final selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(selectedDateTime),
-        confirmText: 'Confirm',
+        confirmText: StringResources.getConfirm,
       );
       if (selectedTime != null) {
         setState(() {
@@ -166,15 +170,15 @@ class _TodoScreenState extends State<TodoScreen> {
             print('Time Difference: $timeDifferenceInHour');
             print('Time Difference: $timeDifferenceInDay');
 
-            if (selectedDropdownValue == 'tenMinute' && timeDifferenceInMinutes <= 600) {
+            if (selectedDropdownValue == StringResources.getTenMin && timeDifferenceInMinutes <= 600) {
               print('Calling before 10 minute Notification');
               NotificationServices.sendNotification(title: title, desc: desc);
               timer.cancel();
-            }else if(selectedDropdownValue == 'oneHour'  && timeDifferenceInHour <= 3600){
+            }else if(selectedDropdownValue == StringResources.getOneHour  && timeDifferenceInHour <= 3600){
               print('Calling before  1 hour Notification');
               NotificationServices.sendNotification(title: title, desc: desc);
               timer.cancel();
-            }else if(selectedDropdownValue == 'oneDay' && timeDifferenceInDay <= 86400){
+            }else if(selectedDropdownValue == StringResources.getOneDay && timeDifferenceInDay <= 86400){
               print('Calling before 1 day Notification');
               NotificationServices.sendNotification(title: title, desc: desc);
               timer.cancel();
@@ -193,11 +197,11 @@ class _TodoScreenState extends State<TodoScreen> {
             _todoListProvider.addTodo(newTodo);
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Added Successfully"),),);
-            Navigator.pop(context);
+            const SnackBar(content: Text(StringResources.getAddSuccess),),);
+            Navigator.of(context).popAndPushNamed('/home');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("User Not Exist")));
+              SnackBar(content: Text(StringResources.getUserNotExist)));
         }
       } on PlatformException catch (e) {
         print('PlatformException: $e');}

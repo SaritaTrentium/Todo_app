@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/common/resources/string_resources.dart';
 
 class CustomBottomNavigation extends StatefulWidget {
   final int currentIndex;
@@ -28,31 +29,31 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
             Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
             break;
           case 1:
-            Navigator.of(context).pushNamed('/addTodo');
+            Navigator.of(context).pushReplacementNamed('/addTodo');
             break;
           case 2:
-            Navigator.of(context).pushNamed('/taskComplete');
+            Navigator.of(context).pushReplacementNamed('/taskComplete');
             break;
           case 3:
-            Navigator.of(context).pushNamed('/userPanel');
+            Navigator.of(context).pushReplacementNamed('/userPanel');
             break;
         }
       },
       items: [
         BottomNavigationBarItem(
-          label : 'Home',
+          label : StringResources.getTodoHomeTitle,
           icon: Icon(Icons.home_outlined),
         ),
         BottomNavigationBarItem(
-          label : 'Add Todo',
+          label : StringResources.getTodoAddTodoTitle,
           icon: Icon(Icons.add),
         ),
         BottomNavigationBarItem(
-          label : 'Task Complete',
+          label : StringResources.getTodoTaskCompleteTitle,
           icon: Icon(Icons.task),
         ),
         BottomNavigationBarItem(
-          label : 'Profile',
+          label : StringResources.getTodoProfileTitle,
           icon: Icon(Icons.account_circle),
         ),
       ],

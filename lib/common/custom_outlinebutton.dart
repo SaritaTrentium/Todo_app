@@ -23,9 +23,9 @@ class _CustomOutlineButtonState extends State<CustomOutlineButton> {
             widget.onPressed();
           },
           style: OutlinedButton.styleFrom(
-            textStyle: TextStyle(
-             color: Colors.deepPurple
-            ),
+            textStyle: (Theme.of(context).brightness == Brightness.dark)
+              ? TextStyle(color: Colors.white)
+              : TextStyle(color: Colors.deepPurple),
             minimumSize: Size(400, 50),
             shape: RoundedRectangleBorder(
               side: const BorderSide(width: 2, color: Colors.green),
