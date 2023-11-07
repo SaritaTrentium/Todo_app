@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/common/Custom_bottom_navigation.dart';
 import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/common/resources/string_resources.dart';
+import 'package:todo_app/common/view_mode.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/widget/viewMode_widget.dart';
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-enum ViewMode { GridView, ListView }
+
 ViewMode currentViewMode = ViewMode.ListView;
 
 class _HomeScreenState extends State<HomeScreen> {

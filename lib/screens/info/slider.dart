@@ -76,38 +76,44 @@ class _SliderScreenState extends State<SliderScreen> {
         ),
       ),
       bottomNavigationBar: _currentPage < sliderList.length -1
-      ? Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      ? Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(onPressed: (){
+                Navigator.of(context).pushNamed('/welcome');
+              }, child: Text(StringResources.getSkip,
+                  style: TextStyle(
+                    color: brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.deepPurple,
+                          fontSize: 16),
+                ),
+              ),
+              TextButton(onPressed: (){
+                _pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease);
+              }, child: Text(StringResources.getNext, style: TextStyle(color: brightness == Brightness.dark
+                   ? Colors.white
+                   : Colors.deepPurple, fontSize: 16),),),
+            ],
+        ),
+      )
+    : Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton(onPressed: (){
               Navigator.of(context).pushNamed('/welcome');
-            }, child: Text(StringResources.getSkip,
-                style: TextStyle(
-                  color: brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.deepPurple,
-                        fontSize: 16),
+            }, child: Text(StringResources.getStarted,style: TextStyle(color: brightness == Brightness.dark
+                 ? Colors.white
+                 : Colors.deepPurple, fontSize: 16),
               ),
             ),
-            TextButton(onPressed: (){
-              _pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.ease);
-            }, child: Text(StringResources.getNext, style: TextStyle(color: brightness == Brightness.dark
-                 ? Colors.white
-                 : Colors.deepPurple, fontSize: 16),),),
           ],
-      )
-    : Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          TextButton(onPressed: (){
-            Navigator.of(context).pushNamed('/welcome');
-          }, child: Text(StringResources.getStarted,style: TextStyle(color: brightness == Brightness.dark
-               ? Colors.white
-               : Colors.deepPurple, fontSize: 16),
-            ),
-          ),
-        ],
-      ),
+        ),
+    ),
     );
   }
 

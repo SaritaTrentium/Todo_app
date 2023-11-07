@@ -68,9 +68,9 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 class _MyAppState extends State<MyApp> {
+  late ThemeChangerProvider _themeProvider;
   @override
   Widget build(BuildContext context) {
-    late ThemeChangerProvider _themeProvider;
    _themeProvider = Provider.of<ThemeChangerProvider>(context);
     return MaterialApp(
       title: StringResources.getTitle,
