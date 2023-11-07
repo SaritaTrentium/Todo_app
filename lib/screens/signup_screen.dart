@@ -120,6 +120,9 @@ class SignUpScreenState extends State<SignUpScreen> {
                               ));
                             }
                         }, text: StringResources.getCreateAccount,
+                          textColor: Theme.of(context).brightness == Brightness.dark
+                              ?  Colors.black
+                              :  Colors.white,
                         ),
                       ),
                     if (isLoading) // Show the CircularProgressIndicator when isLoading is true.

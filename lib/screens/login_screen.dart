@@ -138,7 +138,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             }
                           }
-                      }, text: StringResources.getLoginTitle),
+                      }, text: StringResources.getLoginTitle,
+                            textColor: Theme.of(context).brightness == Brightness.dark
+                              ?  Colors.black
+                              :  Colors.white,),
                         ),
                         Visibility(
                           visible: isLoading, // Control visibility based on loading state
