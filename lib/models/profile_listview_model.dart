@@ -60,7 +60,6 @@ Future<void> _showSignOutConfirmationDialog(BuildContext context) async {
               Navigator.of(context).pop();
               Navigator.of(context).pushNamed('/login');
               _themeProvider.resetThemeMode();
-              Hive.close();
             },
             child: Text(StringResources.getSignOut),
           ),
