@@ -17,7 +17,7 @@ class _UpTodoState extends State<UpTodo> {
         FirebaseAuth.instance.authStateChanges().listen((User? user) {
           if(user != null){
             if(mounted){
-              Navigator.of(context).pushReplacementNamed('/home');
+              Navigator.of(context).pushReplacementNamed('/dashboard');
             }
           }else{
             if(mounted){

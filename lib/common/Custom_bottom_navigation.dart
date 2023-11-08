@@ -11,49 +11,37 @@ class CustomBottomNavigation extends StatefulWidget {
 }
 
 class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? Colors.black26
           : Colors.deepPurple.shade400,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white.withOpacity(.60),
+      type: BottomNavigationBarType.shifting,
+      selectedItemColor: Colors.deepPurple,
+      unselectedItemColor: Colors.deepPurple.withOpacity(.60),
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
       selectedFontSize: 16,
       unselectedFontSize: 14,
       currentIndex: widget.currentIndex,
-      onTap: (value){
-        switch (value){
-          case 0:
-            Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-            break;
-          case 1:
-            Navigator.of(context).pushReplacementNamed('/addTodo');
-            break;
-          case 2:
-            Navigator.of(context).pushReplacementNamed('/taskComplete');
-            break;
-          case 3:
-            Navigator.of(context).pushReplacementNamed('/userPanel');
-            break;
-        }
-      },
+      onTap: widget.onTap,
       items: [
         BottomNavigationBarItem(
-          label : StringResources.getTodoHomeTitle,
+          label: StringResources.getTodoHomeTitle,
           icon: Icon(Icons.home_outlined),
         ),
         BottomNavigationBarItem(
-          label : StringResources.getTodoAddTodoTitle,
+          label: StringResources.getTodoAddTodoTitle,
           icon: Icon(Icons.add),
         ),
         BottomNavigationBarItem(
-          label : StringResources.getTodoTaskCompleteTitle,
+          label: StringResources.getTodoTaskCompleteTitle,
           icon: Icon(Icons.task),
         ),
         BottomNavigationBarItem(
-          label : StringResources.getTodoProfileTitle,
+          label: StringResources.getTodoProfileTitle,
           icon: Icon(Icons.account_circle),
         ),
       ],

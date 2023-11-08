@@ -20,7 +20,7 @@ class AuthServices {
       // You can use FirebaseAuth.instance.currentUser to check if the user is signed in.
       if (FirebaseAuth.instance.currentUser != null) {
         // Navigate to the home screen
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
       }
     } catch (e) {
       print("Error signing in with Google: $e");
@@ -43,7 +43,7 @@ class AuthServices {
         await FirebaseAuth.instance.currentUser!.updateEmail(email);
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Registration Successfully")));
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
        // return getUserId;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +79,7 @@ class AuthServices {
 
       final user = FirebaseAuth.instance.currentUser;
       if(user != null){
-        Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+        Navigator.of(context).pushNamedAndRemoveUntil('/dashboard', (route) => false);
       }else{
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("You are not LogIn.")));

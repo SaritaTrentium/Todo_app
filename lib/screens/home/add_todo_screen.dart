@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/common/Custom_bottom_navigation.dart';
-import 'package:todo_app/common/custom_appbar.dart';
 import 'package:todo_app/common/custom_button.dart';
 import 'package:todo_app/common/custom_textformfield.dart';
 import 'package:todo_app/common/custom_dropdown.dart';
@@ -29,7 +27,6 @@ class _TodoScreenState extends State<TodoScreen> {
   TextEditingController descController = TextEditingController();
   DateTime selectedDateTime = DateTime.now();
   String selectedDropdownValue = StringResources.getTenMin;
-  var _currentIndex=1;
 
   @override
   void initState() {
@@ -46,77 +43,8 @@ class _TodoScreenState extends State<TodoScreen> {
 
     @override
     Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: CustomAppBar(
-          title: StringResources.getTodoAddTodoTitle,
-          centerTitle: true,
-        ),
-        body: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                     child: CustomTextFormField(
-                       controller: titleController,
-                       labelText: StringResources.getAddTodoTitle,
-                       textInputAction: TextInputAction.next,
-                       validator:(value) => Validator.validateTitle(titleController.text),
-                     ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: CustomTextFormField(
-                    controller: descController,
-                    labelText: StringResources.getAddTodoDesc,
-                    textInputAction: TextInputAction.next,
-                    validator:(value) => Validator.validateDesc(descController.text),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextFormField(
-                          readOnly: true,
-                          textInputAction: TextInputAction.done,
-                          controller: TextEditingController(
-                                   text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
-                          labelText: StringResources.getAddTodoSelectedDateTime,
-                          onTap: () => _selectDateAndTime(context),
-                        ),
-                      ),
-                      const SizedBox(width: 20,),
-                      CustomDropDown(
-                        onSelectionChanged: onDropdownValueChanged),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomElevatedButton(
-                  onPressed: addTodo,
-                  text: StringResources.getAdd,
-                  textColor: Theme.of(context).brightness == Brightness.dark
-                      ?  Colors.black
-                      :  Colors.white,
-                ),
-              ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: CustomBottomNavigation(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            // Handle navigation based on the selected index
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-        ),
+      return Container(
+        child: _buildAddTodoScreen(),
       );
     }
   Future<void> _selectDateAndTime(BuildContext context) async {
@@ -198,7 +126,7 @@ class _TodoScreenState extends State<TodoScreen> {
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(StringResources.getAddSuccess),),);
-            Navigator.of(context).popAndPushNamed('/home');
+            Navigator.of(context).popAndPushNamed('/dashboard');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(StringResources.getUserNotExist)));
@@ -211,6 +139,66 @@ class _TodoScreenState extends State<TodoScreen> {
             SnackBar(content: Text(error.toString())));
       }
     }
+  }
+
+  Widget _buildAddTodoScreen() {
+    return  Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomTextFormField(
+                controller: titleController,
+                labelText: StringResources.getAddTodoTitle,
+                textInputAction: TextInputAction.next,
+                validator:(value) => Validator.validateTitle(titleController.text),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomTextFormField(
+                controller: descController,
+                labelText: StringResources.getAddTodoDesc,
+                textInputAction: TextInputAction.next,
+                validator:(value) => Validator.validateDesc(descController.text),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CustomTextFormField(
+                      readOnly: true,
+                      textInputAction: TextInputAction.done,
+                      controller: TextEditingController(
+                          text:DateFormat.yMEd().add_jms().format(selectedDateTime)),
+                      labelText: StringResources.getAddTodoSelectedDateTime,
+                      onTap: () => _selectDateAndTime(context),
+                    ),
+                  ),
+                  const SizedBox(width: 20,),
+                  CustomDropDown(
+                      onSelectionChanged: onDropdownValueChanged),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomElevatedButton(
+              onPressed: addTodo,
+              text: StringResources.getAdd,
+              textColor: Theme.of(context).brightness == Brightness.dark
+                  ?  Colors.black
+                  :  Colors.white,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

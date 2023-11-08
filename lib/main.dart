@@ -13,6 +13,7 @@ import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/providers/todo_provider.dart';
 import 'package:todo_app/screens/aboutUs_screen.dart';
+import 'package:todo_app/screens/home/dashborad_screen.dart';
 import 'package:todo_app/screens/home/task_complete.dart';
 import 'package:todo_app/screens/home/user_profile.dart';
 import 'package:todo_app/screens/home/home_screen.dart';
@@ -85,9 +86,10 @@ class _MyAppState extends State<MyApp> {
         '/welcome': (context) => Welcome(),
         '/login': (context) => LoginScreen(),
         '/signUp': (context) => SignUpScreen(),
+        '/dashboard': (context) => DashboardScreen(),
         '/home': (context) => HomeScreen(),
-        '/taskComplete': (context) => TaskComplete(),
-        '/userPanel': (context) => UserPanel(),
+        '/taskComplete': (context) => TaskCompleteScreen(),
+        '/userPanel': (context) => UserPanelScreen(),
         '/todoList': (context) => TodoListScreen(),
         '/addTodo': (context) => TodoScreen(),
         '/search': (context) => SearchScreen(),

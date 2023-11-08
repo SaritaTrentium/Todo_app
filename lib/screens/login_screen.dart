@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if(user != null){
           print('Login with the current Email: ${user.email}');
           saveLoginState(true);
-          Navigator.of(context).pushNamed('/home');
+          Navigator.of(context).pushNamed('/dashboard');
         }
       }else{
         print('SignUp First');
