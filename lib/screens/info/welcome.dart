@@ -22,8 +22,8 @@ class Welcome extends StatelessWidget {
                const SizedBox(height: 20,),
                Text(StringResources.getWelcomeTodoSubTitle,textAlign: TextAlign.center ,style: TextStyle(
                color: brightness == Brightness.dark
-               ? Colors.white: Colors.black54,
-                   fontSize: 14,
+               ? Colors.white: Colors.deepPurple.shade300,
+                   fontSize: 16,
                ), ),],
            ),
             Column(

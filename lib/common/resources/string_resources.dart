@@ -26,9 +26,11 @@ class StringResources{
  static const String getCancel = "Cancel";
  static const String getSignOut = "Sign Out";
  static const String getOR = "OR";
- static const String getTenMin = "10 Min";
+ static const String getTenMin = "10 Minute";
  static const String getOneHour = "1 Hour";
  static const String getOneDay = "1 Day";
+ static const String getCustomNotify = "+ Add Notify";
+ static const String getAddCustomTitle = "Set Notification";
  static const String getManageTitle = "Manage your tasks";
  static const String getManageSubtitle = "You can easily manage all of your daily tasks in demo for free";
  static const String getCreateTitle = "Create daily routine";
@@ -53,4 +55,7 @@ class StringResources{
  static const String getAddSuccess = "Added Successfully";
  static const String getUserNotExist = "User Not Exist";
  static const String getAdd = "Add";
+ static const String getMinutes = "Minute";
+ static const String getHours = "Hour";
+ static const String getDays = "Day";
 }

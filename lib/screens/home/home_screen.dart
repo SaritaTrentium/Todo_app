@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/common/custom_appbar.dart';
-import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/common/view_mode.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
@@ -18,7 +16,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   var logger;
   late TodoListProvider _todoListProvider;
   late List<Todo> filteredTodos = [];
@@ -82,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
                 else {
-                  return  currentViewMode == ViewMode.GridView
+                  return currentViewMode == ViewMode.GridView
                       ? TodoUtils.buildGridView(filteredTodos, todoListProvider, context)
                       : TodoUtils.buildListView(filteredTodos, todoListProvider, context);
                 }

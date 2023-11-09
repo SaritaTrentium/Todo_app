@@ -10,7 +10,7 @@ class CustomDropDown extends StatefulWidget {
 
 class _CustomDropDownState extends State<CustomDropDown> {
   String selectedValue = StringResources.getTenMin;
-  List<String> scheduleNotify = [StringResources.getTenMin, StringResources.getOneHour , StringResources.getOneDay];
+  List<String> scheduleNotify = [StringResources.getTenMin, StringResources.getOneHour , StringResources.getOneDay, StringResources.getCustomNotify];
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(

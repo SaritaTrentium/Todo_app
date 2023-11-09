@@ -15,12 +15,9 @@ class _CustomBottomNavigationState extends State<CustomBottomNavigation> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? Colors.black26
-          : Colors.deepPurple.shade400,
       type: BottomNavigationBarType.shifting,
-      selectedItemColor: Colors.deepPurple,
-      unselectedItemColor: Colors.deepPurple.withOpacity(.60),
+      selectedItemColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.deepPurple,
+      unselectedItemColor: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.deepPurple.withOpacity(.60),
       showSelectedLabels: true,
       showUnselectedLabels: true,
       selectedFontSize: 16,

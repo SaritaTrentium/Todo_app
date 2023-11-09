@@ -32,19 +32,9 @@ class NotificationServices{
     await flutterLocalNotificationsPlugin.show(
         0, title, desc, notificationDetails);
   }
-  // static showPeriodicNotification({
-  //   required int id,
-  //   required String title,
-  //   required String desc})async{
-  //   AndroidNotificationDetails androidNotificationDetails =
-  //   const AndroidNotificationDetails(
-  //     "channelId",
-  //     "channelName",
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //   );NotificationDetails notificationDetails = NotificationDetails(
-  //     android: androidNotificationDetails,
-  //   );
-  //   await flutterLocalNotificationsPlugin.periodicallyShow(id, title, desc, RepeatInterval.everyMinute, notificationDetails);
-  // }
+
+  static cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
 }

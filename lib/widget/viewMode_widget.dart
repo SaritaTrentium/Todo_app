@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
+import 'package:todo_app/services/notification_services.dart';
 
 class TodoUtils {
+
   static Widget buildGridView(List<Todo> filteredTodos,
       TodoListProvider todoListProvider, BuildContext context) {
     return GridView.builder(
@@ -101,7 +103,8 @@ class TodoUtils {
     );
   }
 
-  static Widget buildListView(List<Todo> filteredTodos, TodoListProvider todoListProvider, BuildContext context) {
+  static Widget buildListView(List<Todo> filteredTodos,
+      TodoListProvider todoListProvider, BuildContext context) {
     return ListView.builder(
       itemCount: filteredTodos.length,
       itemBuilder: (context, index) {

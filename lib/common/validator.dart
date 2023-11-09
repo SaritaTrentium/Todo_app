@@ -47,7 +47,14 @@ class Validator{
     }
     final RegExp phoneRegExp = RegExp(r'^\d{10}$');
     if(!phoneRegExp.hasMatch(number)){
-      return "Phone Number length should be 10";
+      return "Phone number length should be 10";
+    }
+    return null;
+  }
+
+  static String? validateCustomTime(String value){
+    if(value.isEmpty){
+      return "Add notification time";
     }
     return null;
   }

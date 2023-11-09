@@ -9,7 +9,7 @@ class ChangeThemeButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     late ThemeChangerProvider _themeProvider;
     _themeProvider = Provider.of<ThemeChangerProvider>(context, listen: false);
-    return InkWell(
+    return GestureDetector(
       onTap: (){
         _themeProvider.toggleTheme();
       },

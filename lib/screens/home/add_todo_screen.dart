@@ -25,8 +25,12 @@ class _TodoScreenState extends State<TodoScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
+  TextEditingController customTimeController = TextEditingController();
   DateTime selectedDateTime = DateTime.now();
   String selectedDropdownValue = StringResources.getTenMin;
+  var selectedTimeUnit;
+  int? customTimeValue;
+
 
   @override
   void initState() {
@@ -35,10 +39,14 @@ class _TodoScreenState extends State<TodoScreen> {
   @override
   void dispose() {
     super.dispose();
+    customTimeController.dispose();
   }
 
-  void onDropdownValueChanged(String value) {
+  onDropdownValueChanged(String value) {
     selectedDropdownValue = value;
+    if(selectedDropdownValue == StringResources.getCustomNotify){
+      _showCustomTimeInputDialog(context, selectedDropdownValue, setCustomTime);
+    }
   }
 
     @override
@@ -86,13 +94,14 @@ class _TodoScreenState extends State<TodoScreen> {
         if (user != null) {
           String userEmail = user.email ?? "";
 
-          Timer.periodic(Duration(minutes: 1), (timer) {
+          Timer.periodic(Duration(seconds: 30), (timer) {
             DateTime currentTime = DateTime.now();
             int timeDifferenceInMinutes = selectedDateTime
                 .difference(currentTime)
                 .inSeconds;
             int timeDifferenceInHour = selectedDateTime.difference(currentTime).inSeconds;
             int timeDifferenceInDay = selectedDateTime.difference(currentTime).inSeconds;
+            int timeDifferenceCustom = selectedDateTime.difference(currentTime).inMinutes;
 
             print('Time Difference: $timeDifferenceInMinutes');
             print('Time Difference: $timeDifferenceInHour');
@@ -110,8 +119,16 @@ class _TodoScreenState extends State<TodoScreen> {
               print('Calling before 1 day Notification');
               NotificationServices.sendNotification(title: title, desc: desc);
               timer.cancel();
+            }else if(selectedDropdownValue == StringResources.getCustomNotify){
+              print('Get data === $timeDifferenceCustom');
+              if(timeDifferenceCustom == customTimeValue!){
+                print('Calling Custom Notification');
+                NotificationServices.sendNotification(title: title, desc: desc);
+                timer.cancel();
+              }
             }
           });
+
           final newTodo = Todo(
             title: title,
             desc: desc,
@@ -199,6 +216,89 @@ class _TodoScreenState extends State<TodoScreen> {
         ),
       ),
     );
+  }
+
+  void _showCustomTimeInputDialog(BuildContext context, String selectedDropdownValue, void Function(int?) setCustomTime) {
+    double dialogWidth = 300.0;
+    double dialogHeight = 100.0;
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
+          final _formKey = GlobalKey<FormState>();
+          return AlertDialog(
+            title: Text(StringResources.getCustomNotify),
+            content: Form(
+              key: _formKey,
+              child: Container(
+                height: dialogHeight,
+                width: dialogWidth,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: CustomTextFormField(
+                          controller: customTimeController,
+                          labelText: StringResources.getAddCustomTitle,
+                          textInputAction: TextInputAction.done,
+                          keyboardType: TextInputType.number,
+                          validator: (value) => Validator.validateCustomTime(customTimeController.text),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    DropdownButton<String>(
+                      value: selectedTimeUnit,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedTimeUnit = newValue!;
+                        });
+                      },
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: StringResources.getMinutes,
+                          child: Text(StringResources.getMinutes),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: StringResources.getHours,
+                          child: Text(StringResources.getHours),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: StringResources.getDays,
+                          child: Text(StringResources.getDays),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text(StringResources.getCancel),),
+              TextButton(
+                onPressed: () {
+                  if(_formKey.currentState!.validate()){
+                    int customTime = int.parse(customTimeController.text);
+                    if(customTime != null){
+                      if(selectedTimeUnit == StringResources.getHours){
+                        customTime *= 60;
+                      }else if (selectedTimeUnit == StringResources.getDays) {
+                        customTime *= 60 * 24; // Convert days to minutes
+                      }
+                      print('Custom Time: $customTime minutes');
+                      setCustomTime(customTime);
+                      Navigator.of(context).pop();
+                    }
+                  }
+                  }, child: Text(StringResources.getConfirm),
+              ),
+            ],
+          );
+        });
+  }
+
+  void setCustomTime(int? time) {
+    setState(() {
+      customTimeValue = time;
+    });
   }
 }
 
