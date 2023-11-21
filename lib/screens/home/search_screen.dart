@@ -132,7 +132,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       onPressed: () {
                                                         final user = FirebaseAuth.instance.currentUser;
                                                         if (user != null) {
-                                                          _todoListProvider.deleteTodo(snapshot.data![index]);
+                                                          _todoListProvider.deleteTodo(snapshot.data![index],index);
                                                           ScaffoldMessenger.of(context).showSnackBar(
                                                             SnackBar(
                                                               content: Text(

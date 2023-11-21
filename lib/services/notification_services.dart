@@ -1,6 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationServices{
+  static Set<String> subscribedTokens = {};
+
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -18,7 +20,7 @@ class NotificationServices{
 
   }
 
-  static sendNotification({required String title,required String desc}) async {
+  static Future<void> sendNotification({required String title,required String desc}) async {
     AndroidNotificationDetails androidNotificationDetails =
     const AndroidNotificationDetails(
       "channelId",
@@ -33,8 +35,16 @@ class NotificationServices{
         0, title, desc, notificationDetails);
   }
 
-  static cancelNotification(int id) async {
+  static Future<void> cancelNotifications(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
+  }
+
+  static Future<void> subscribeDevice(String deviceToken) async {
+    await subscribedTokens.add(deviceToken);
+  }
+
+  static Future<void> unsubscribeDevice(String deviceToken) async {
+    await subscribedTokens.remove(deviceToken);
   }
 
 }

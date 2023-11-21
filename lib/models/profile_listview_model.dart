@@ -17,7 +17,7 @@ class ProfileViewModel{
 List<ProfileViewModel> profileView= [
   ProfileViewModel(leading: Icon(Icons.light_mode), title: StringResources.getThemeTitle, trailing: ChangeThemeButtonWidget(),
       onTap: (context){
-        Navigator.of(context).pushNamed('/theme');
+        ChangeThemeButtonWidget();
       }),
   ProfileViewModel(leading: Icon(Icons.dashboard_customize), title: StringResources.getAboutUsTitle, trailing: Icon(Icons.navigate_next),
       onTap: (context){

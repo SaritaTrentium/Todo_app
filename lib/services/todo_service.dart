@@ -17,6 +17,7 @@ class TodoService{
       return querySnapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         return Todo(
+          id: doc.hashCode,
           userId: doc.id,
           title: data['title'] ?? '',
           desc: data['description'] ?? '',

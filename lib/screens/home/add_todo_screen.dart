@@ -11,7 +11,6 @@ import 'package:todo_app/models/todo_model.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'dart:async';
-import 'package:todo_app/services/notification_services.dart';
 
 class TodoScreen extends StatefulWidget {
   TodoScreen({super.key});
@@ -21,16 +20,16 @@ class TodoScreen extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreen> {
-  var logger;
+  late Timer notificationTimer;
   final _formKey = GlobalKey<FormState>();
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
   TextEditingController customTimeController = TextEditingController();
   DateTime selectedDateTime = DateTime.now();
-  String selectedDropdownValue = StringResources.getTenMin;
+  late TodoListProvider todoListProvider;
   var selectedTimeUnit;
   int? customTimeValue;
-
+  bool showError = false;
 
   @override
   void initState() {
@@ -39,18 +38,18 @@ class _TodoScreenState extends State<TodoScreen> {
   @override
   void dispose() {
     super.dispose();
-    customTimeController.dispose();
   }
 
-  onDropdownValueChanged(String value) {
-    selectedDropdownValue = value;
-    if(selectedDropdownValue == StringResources.getCustomNotify){
-      _showCustomTimeInputDialog(context, selectedDropdownValue, setCustomTime);
-    }
-  }
+  // onDropdownValueChanged(String value) {
+  //   selectedDropdownValue = value;
+  //   if(selectedDropdownValue == StringResources.getCustomNotify){
+  //     _showCustomTimeInputDialog(context, selectedDropdownValue, setCustomTime);
+  //   }
+  // }
 
     @override
     Widget build(BuildContext context) {
+    todoListProvider = Provider.of<TodoListProvider>(context);
       return Container(
         child: _buildAddTodoScreen(),
       );
@@ -64,7 +63,6 @@ class _TodoScreenState extends State<TodoScreen> {
     );
 
     if (selectedDate != null) {
-      // ignore: use_build_context_synchronously
       final selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(selectedDateTime),
@@ -94,53 +92,20 @@ class _TodoScreenState extends State<TodoScreen> {
         if (user != null) {
           String userEmail = user.email ?? "";
 
-          Timer.periodic(Duration(seconds: 30), (timer) {
-            DateTime currentTime = DateTime.now();
-            int timeDifferenceInMinutes = selectedDateTime
-                .difference(currentTime)
-                .inSeconds;
-            int timeDifferenceInHour = selectedDateTime.difference(currentTime).inSeconds;
-            int timeDifferenceInDay = selectedDateTime.difference(currentTime).inSeconds;
-            int timeDifferenceCustom = selectedDateTime.difference(currentTime).inMinutes;
-
-            print('Time Difference: $timeDifferenceInMinutes');
-            print('Time Difference: $timeDifferenceInHour');
-            print('Time Difference: $timeDifferenceInDay');
-
-            if (selectedDropdownValue == StringResources.getTenMin && timeDifferenceInMinutes <= 600) {
-              print('Calling before 10 minute Notification');
-              NotificationServices.sendNotification(title: title, desc: desc);
-              timer.cancel();
-            }else if(selectedDropdownValue == StringResources.getOneHour  && timeDifferenceInHour <= 3600){
-              print('Calling before  1 hour Notification');
-              NotificationServices.sendNotification(title: title, desc: desc);
-              timer.cancel();
-            }else if(selectedDropdownValue == StringResources.getOneDay && timeDifferenceInDay <= 86400){
-              print('Calling before 1 day Notification');
-              NotificationServices.sendNotification(title: title, desc: desc);
-              timer.cancel();
-            }else if(selectedDropdownValue == StringResources.getCustomNotify){
-              print('Get data === $timeDifferenceCustom');
-              if(timeDifferenceCustom == customTimeValue!){
-                print('Calling Custom Notification');
-                NotificationServices.sendNotification(title: title, desc: desc);
-                timer.cancel();
-              }
-            }
-          });
-
           final newTodo = Todo(
+            id: 1,
             title: title,
             desc: desc,
             deadline: selectedDateTime,
-            userId: userEmail,
-          );
+            userId: userEmail,);
+
           late TodoListProvider _todoListProvider;
            _todoListProvider = Provider.of<TodoListProvider>(
               context, listen: false);
           setState(() {
             _todoListProvider.addTodo(newTodo);
           });
+          print('Add data title: $title and desc: $desc deadline: $selectedDateTime userId: $userEmail');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text(StringResources.getAddSuccess),),);
             Navigator.of(context).popAndPushNamed('/dashboard');
@@ -198,7 +163,12 @@ class _TodoScreenState extends State<TodoScreen> {
                   ),
                   const SizedBox(width: 20,),
                   CustomDropDown(
-                      onSelectionChanged: onDropdownValueChanged),
+                    selectedValue: todoListProvider.selectedDropdownValue,
+                    onSelectionChanged: (String value){
+                      todoListProvider.setNotificationTimer(value);
+                      print("DropDown Value: $value");
+                    },
+                  ),
                 ],
               ),
             ),
@@ -218,88 +188,85 @@ class _TodoScreenState extends State<TodoScreen> {
     );
   }
 
-  void _showCustomTimeInputDialog(BuildContext context, String selectedDropdownValue, void Function(int?) setCustomTime) {
-    double dialogWidth = 300.0;
-    double dialogHeight = 100.0;
-    showDialog(
-        context: context,
-        builder: (BuildContext context){
-          final _formKey = GlobalKey<FormState>();
-          return AlertDialog(
-            title: Text(StringResources.getCustomNotify),
-            content: Form(
-              key: _formKey,
-              child: Container(
-                height: dialogHeight,
-                width: dialogWidth,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: CustomTextFormField(
-                          controller: customTimeController,
-                          labelText: StringResources.getAddCustomTitle,
-                          textInputAction: TextInputAction.done,
-                          keyboardType: TextInputType.number,
-                          validator: (value) => Validator.validateCustomTime(customTimeController.text),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    DropdownButton<String>(
-                      value: selectedTimeUnit,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedTimeUnit = newValue!;
-                        });
-                      },
-                      items: [
-                        DropdownMenuItem<String>(
-                          value: StringResources.getMinutes,
-                          child: Text(StringResources.getMinutes),
-                        ),
-                        DropdownMenuItem<String>(
-                          value: StringResources.getHours,
-                          child: Text(StringResources.getHours),
-                        ),
-                        DropdownMenuItem<String>(
-                          value: StringResources.getDays,
-                          child: Text(StringResources.getDays),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text(StringResources.getCancel),),
-              TextButton(
-                onPressed: () {
-                  if(_formKey.currentState!.validate()){
-                    int customTime = int.parse(customTimeController.text);
-                    if(customTime != null){
-                      if(selectedTimeUnit == StringResources.getHours){
-                        customTime *= 60;
-                      }else if (selectedTimeUnit == StringResources.getDays) {
-                        customTime *= 60 * 24; // Convert days to minutes
-                      }
-                      print('Custom Time: $customTime minutes');
-                      setCustomTime(customTime);
-                      Navigator.of(context).pop();
-                    }
-                  }
-                  }, child: Text(StringResources.getConfirm),
-              ),
-            ],
-          );
-        });
-  }
+  // void _showCustomTimeInputDialog(BuildContext context, String selectedDropdownValue, void Function(int?) setCustomTime) {
+  //   double dialogWidth = 300.0;
+  //   double dialogHeight = 100.0;
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context){
+  //         final _formKey = GlobalKey<FormState>();
+  //         return AlertDialog(
+  //           title: Text(StringResources.getCustomNotify),
+  //           content: Form(
+  //             key: _formKey,
+  //             child: Container(
+  //               height: dialogHeight,
+  //               width: dialogWidth,
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Expanded(
+  //                     child: CustomTextFormField(
+  //                         controller: customTimeController,
+  //                         labelText: StringResources.getAddCustomTitle,
+  //                         textInputAction: TextInputAction.done,
+  //                         keyboardType: TextInputType.number,
+  //                         validator: (value) => Validator.validateCustomTime(customTimeController.text),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(width: 10),
+  //                   DropdownButton<String>(
+  //                     value: selectedTimeUnit,
+  //                     onChanged: (String? newValue) {
+  //                       setState(() {
+  //                         selectedTimeUnit = newValue!;
+  //                       });
+  //                     },
+  //                     items: [
+  //                       DropdownMenuItem<String>(
+  //                         value: StringResources.getMinutes,
+  //                         child: Text(StringResources.getMinutes),
+  //                       ),
+  //                       DropdownMenuItem<String>(
+  //                         value: StringResources.getHours,
+  //                         child: Text(StringResources.getHours),
+  //                       ),
+  //                       DropdownMenuItem<String>(
+  //                         value: StringResources.getDays,
+  //                         child: Text(StringResources.getDays),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //           actions: <Widget>[
+  //             TextButton(onPressed: (){Navigator.of(context).pop();}, child: Text(StringResources.getCancel),),
+  //             TextButton(
+  //               onPressed: () {
+  //                 if(_formKey.currentState!.validate()){
+  //                   int customTime = int.parse(customTimeController.text);
+  //                   if(selectedTimeUnit == StringResources.getHours){
+  //                     customTime *= 60;
+  //                   }else if (selectedTimeUnit == StringResources.getDays) {
+  //                     customTime *= 60 * 24; // Convert days to minutes
+  //                   }
+  //                   print('Custom Time: $customTime minutes');
+  //                   setCustomTime(customTime);
+  //                   Navigator.of(context).pop();
+  //                                   }
+  //                 }, child: Text(StringResources.getConfirm),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
 
-  void setCustomTime(int? time) {
-    setState(() {
-      customTimeValue = time;
-    });
-  }
+  // void setCustomTime(int? time) {
+  //   setState(() {
+  //     customTimeValue = time;
+  //   });
+  // }
+
 }
-
-

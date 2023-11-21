@@ -58,4 +58,17 @@ class Validator{
     }
     return null;
   }
+
+  // static String? validateDate(DateTime date) {
+  //   if (date == null) {
+  //     return 'Please select a date.';
+  //   }
+  //
+  //   DateTime currentTimePlusTenMinutes = DateTime.now().add(Duration(minutes: 10));
+  //   if (date.isBefore(currentTimePlusTenMinutes)) {
+  //     return 'Selected date and time must be at least ten minutes from the current time.';
+  //   }
+  //
+  //   return null;
+  // }
 }

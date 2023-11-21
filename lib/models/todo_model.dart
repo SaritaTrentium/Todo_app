@@ -1,22 +1,25 @@
 import 'package:hive/hive.dart';
-part 'todo_model.g.dart';
+
 
 @HiveType(typeId: 0)
 class Todo extends HiveObject{
   @HiveField(0)
+  final int id;
+
+  @HiveField(1)
   final String title;
   
-  @HiveField(1)
+  @HiveField(2)
   final String desc;
 
-  @HiveField(2)
+  @HiveField(3)
   DateTime? deadline;
   
-  @HiveField(3)
+  @HiveField(4)
   bool? isCompleted;
 
-  @HiveField(4)
+  @HiveField(5)
   final String userId;
 
-  Todo({required this.title, required this.desc,required this.deadline , this.isCompleted = false, required this.userId});
+  Todo({required this.id, required this.title, required this.desc,required this.deadline , this.isCompleted = false, required this.userId});
 }

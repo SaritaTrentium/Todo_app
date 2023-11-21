@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -6,7 +8,6 @@ import 'package:todo_app/common/view_mode.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
 import 'package:todo_app/widget/viewMode_widget.dart';
-import '../../services/notification_services.dart';
 import 'package:timezone/data/latest.dart' as tz;
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,11 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
   late TodoListProvider _todoListProvider;
   late List<Todo> filteredTodos = [];
   String? query;
+  ViewMode currentViewMode = ViewMode.ListView;
+  late Timer notificationTimer;
 
   @override
   void initState() {
     super.initState();
-    NotificationServices.initializeNotification();
     tz.initializeTimeZones();
     setState(() {
       checkUsersTodo();
@@ -51,13 +53,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    print('Building HomeScreen with currentViewMode: $currentViewMode');
     return Container(
       child: _buildHomeScreen(),
     );
   }
 
   Widget _buildHomeScreen() {
-    ViewMode currentViewMode = ViewMode.ListView;
     return SafeArea(
       child: Column (
         children: [
@@ -90,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 }
 
 

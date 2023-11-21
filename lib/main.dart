@@ -6,8 +6,8 @@ import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/firebase_options.dart';
 import 'package:todo_app/models/check_user_status_adapter.dart';
 import 'package:todo_app/models/theme_mode_adapter.dart';
-import 'package:todo_app/models/todo_model.dart';
-import 'package:todo_app/models/user_model.dart';
+import 'package:todo_app/models/todo_adapter.dart';
+import 'package:todo_app/models/user_adapter.dart';
 import 'package:todo_app/providers/auth_provider.dart';
 import 'package:todo_app/providers/theme_changer_provider.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
@@ -27,7 +27,6 @@ import 'package:todo_app/screens/todo_list_screen.dart';
 import 'package:todo_app/screens/home/add_todo_screen.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:todo_app/widget/change_theme_widget.dart';
 import 'providers/user_provider.dart';
 
 Future<void> main() async {
@@ -39,15 +38,12 @@ Future<void> main() async {
   );
   logger.d("Firebase initialization completed");
   tz.initializeTimeZones();
-  //await SharedPreferences.getInstance();
 
   await Hive.initFlutter();
   Hive.registerAdapter(TodoAdapter());
-  Hive.registerAdapter(UsersAdapter());
+  Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(CheckUserStatusAdapter());
   Hive.registerAdapter(ThemeModeAdapter());
-
- // await Hive.openBox<Todo>('todos');
 
   logger.d("App Run");
   runApp(
@@ -94,7 +90,6 @@ class _MyAppState extends State<MyApp> {
         '/addTodo': (context) => TodoScreen(),
         '/search': (context) => SearchScreen(),
         '/aboutUs': (context) => AboutUsScreen(),
-        '/theme': (context) => ChangeThemeButtonWidget(),
       },
     );
   }

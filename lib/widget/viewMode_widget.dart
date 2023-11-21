@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/common/resources/string_resources.dart';
 import 'package:todo_app/models/todo_model.dart';
 import 'package:todo_app/providers/todo_list_provider.dart';
+import 'package:todo_app/screens/home/myListCardItem.dart';
 import 'package:todo_app/services/notification_services.dart';
 
 class TodoUtils {
@@ -26,7 +27,8 @@ class TodoUtils {
                 activeColor: Colors.deepPurple,
                 onChanged: (bool? newValue) {
                   if (newValue != null) {
-                    todoListProvider.updateTodoCompletion(todo, newValue);
+                    final updateTodoIsComplete = todoListProvider.updateTodoCompletion(todo, newValue);
+                    print('isCompeted Todo : $updateTodoIsComplete');
                   } else {
                     print(StringResources.getCheckValueNull);
                   }
@@ -67,7 +69,9 @@ class TodoUtils {
                                   final user = FirebaseAuth.instance
                                       .currentUser;
                                   if (user != null) {
-                                    todoListProvider.deleteTodo(todo);
+                                    final deletedItem = todoListProvider.deleteTodo(todo, index);
+                                    NotificationServices.unsubscribeDevice(user.uid);
+                                    print('Delete item: $deletedItem');
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(StringResources.getDeleteSuccess),
@@ -109,78 +113,7 @@ class TodoUtils {
       itemCount: filteredTodos.length,
       itemBuilder: (context, index) {
         final todo = filteredTodos[index];
-        return Card(
-          elevation: 2.0,
-          margin: EdgeInsets.all(8.0),
-          child: ListTile(
-            leading: Checkbox(
-              value: todo.isCompleted,
-              activeColor: Colors.deepPurple,
-              onChanged: (bool? newValue) {
-                if (newValue != null) {
-                    todo.isCompleted = newValue;
-                  todoListProvider.updateTodoCompletion(todo, newValue);
-                } else {
-                  print(StringResources.getCheckValueNull);
-                }
-              },
-            ),
-            title: Text(
-              todo.title,
-              style: TextStyle(
-                decoration: todo.isCompleted!
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-              ),
-            ),
-            subtitle: Text(todo.desc),
-            trailing: IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text(StringResources.getDeleteConfirm),
-                      content: Text(StringResources.getDeleteSure),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(StringResources.getCancel),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            final user = FirebaseAuth.instance.currentUser;
-                            if (user != null) {
-                                todoListProvider.deleteTodo(todo);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(StringResources.getDeleteConfirm),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(StringResources.getDeleteWorkNotProperly),
-                                ),
-                              );
-                            }
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(StringResources.getDelete),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              icon: const Icon(
-                Icons.delete, // Change the delete button color
-              ),
-            ),
-          ),
-        );
+        return MyListCardItem(todo: todo, todoListProvider: todoListProvider, index: index,);
       },
     );
   }
